@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "366120527293",
+    "project_id": "cmsc190-jlpp",
+    "storage_bucket": "cmsc190-jlpp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:366120527293:android:65f36b519f92454f7eded4",
+        "android_client_info": {
+          "package_name": "com.example.alpha_lifeguard"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "366120527293-cg5qgrf48pn53a2ig7eg5pt89hs3rp8g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBvADh2jTDRtjCQCoGwM3zvoXs9zXw45ks"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "366120527293-cg5qgrf48pn53a2ig7eg5pt89hs3rp8g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
