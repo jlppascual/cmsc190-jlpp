@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "366120527293",
-    "project_id": "cmsc190-jlpp",
-    "storage_bucket": "cmsc190-jlpp.appspot.com"
+    "project_number": "174727970445",
+    "project_id": "cmsc190-lifeguard",
+    "storage_bucket": "cmsc190-lifeguard.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:366120527293:android:65f36b519f92454f7eded4",
+        "mobilesdk_app_id": "1:174727970445:android:a21badd702ebe14cc6ecc4",
         "android_client_info": {
           "package_name": "com.example.alpha_lifeguard"
         }
       },
       "oauth_client": [
         {
-          "client_id": "366120527293-cg5qgrf48pn53a2ig7eg5pt89hs3rp8g.apps.googleusercontent.com",
+          "client_id": "174727970445-isdrbgg7dt3vmgqucv0ha9cs9ascbn9b.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBvADh2jTDRtjCQCoGwM3zvoXs9zXw45ks"
+          "current_key": "AIzaSyBVzTXbqWFXKeMLndMaqkK_D_haH43x5E8"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "366120527293-cg5qgrf48pn53a2ig7eg5pt89hs3rp8g.apps.googleusercontent.com",
+              "client_id": "174727970445-isdrbgg7dt3vmgqucv0ha9cs9ascbn9b.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

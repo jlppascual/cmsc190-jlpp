@@ -1,3 +1,4 @@
+import 'package:alpha_lifeguard/services/auth.dart';
 import 'package:flutter/material.dart';
 
 class UserProfile extends StatefulWidget {
@@ -141,6 +142,24 @@ class _UserProfileState extends State<UserProfile> {
                               Icon(Icons.pin_drop),
                               Text(' '),
                               Text("Turn off location sharing")
+                            ],
+                          )),
+                    ),
+                                        SizedBox(
+                      width: 350,
+                      child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              elevation: 5,
+                              backgroundColor: Colors.yellow[100],
+                              foregroundColor: Colors.red[700]),
+                          onPressed: () {
+                            AuthService.instance.userSignOut();
+                          },
+                          child: Row(
+                            children: const [
+                              Icon(Icons.logout_rounded),
+                              Text(' '),
+                              Text("Log Out")
                             ],
                           )),
                     )

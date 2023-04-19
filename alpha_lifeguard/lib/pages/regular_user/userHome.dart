@@ -1,8 +1,8 @@
 import 'package:alpha_lifeguard/pages/regular_user/profile.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+// import 'package:image_picker/image_picker.dart';
 import 'package:alpha_lifeguard/pages/regular_user/home.dart';
-import 'package:alpha_lifeguard/pages/regular_user/historyNav.dart';
+import 'package:alpha_lifeguard/pages/regular_user/history_nav.dart';
 
 class UserHome extends StatefulWidget {
   const UserHome({super.key});
@@ -41,7 +41,7 @@ class _UserHomeState extends State<UserHome> {
             BottomNavigationBarItem(
                 icon: Icon(Icons.home_filled), label: 'Home'),
             BottomNavigationBarItem(
-                icon: Icon(Icons.dashboard), label: 'History'),
+                icon: Icon(Icons.alarm), label: 'History'),
             BottomNavigationBarItem(
                 icon: Icon(Icons.person_2_rounded), label: 'Profile'),
           ],

@@ -1,14 +1,15 @@
 import 'package:alpha_lifeguard/pages/regular_user/userHome.dart';
+import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
-class UserLogin extends StatefulWidget {
-  const UserLogin({super.key});
+class ResponseLogin extends StatefulWidget {
+  const ResponseLogin({super.key});
 
   @override
-  State<UserLogin> createState() => _UserLoginState();
+  State<ResponseLogin> createState() => _ResponseLoginState();
 }
 
-class _UserLoginState extends State<UserLogin> {
+class _ResponseLoginState extends State<ResponseLogin> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,6 +19,17 @@ class _UserLoginState extends State<UserLogin> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: <Widget>[
+              Container(
+                  padding: const EdgeInsets.fromLTRB(10, 80, 0, 0),
+                  alignment: Alignment.topLeft,
+                  child: IconButton(
+                      icon: const Icon(
+                        Icons.arrow_back,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {
+                        Get.back();
+                      })),
               Container(
                 padding: const EdgeInsets.all(50),
                 child: const Align(
@@ -76,13 +88,11 @@ class _UserLoginState extends State<UserLogin> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text("Don't have an account?",
-                      style: TextStyle(color: Colors.white)),
                   TextButton(
                     onPressed: () {
-                      Navigator.pop(context);
+                      debugPrint("Forgot password clicked!");
                     },
-                    child: const Text('Register!'),
+                    child: const Text('Forgot Password?'),
                   ),
                 ],
               ),

@@ -44,40 +44,39 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyAzdUCoT13IZXEmwoxIDPiIfb0D2M6_tEI',
-    appId: '1:366120527293:web:0a430461237f0fc17eded4',
-    messagingSenderId: '366120527293',
-    projectId: 'cmsc190-jlpp',
-    authDomain: 'cmsc190-jlpp.firebaseapp.com',
-    storageBucket: 'cmsc190-jlpp.appspot.com',
-    measurementId: 'G-S8R2QCM37N',
+    apiKey: 'AIzaSyCy5XWcKNBH-ITYp8iOAtZPSOIbHMqRI-8',
+    appId: '1:174727970445:web:5738cc5ff5259540c6ecc4',
+    messagingSenderId: '174727970445',
+    projectId: 'cmsc190-lifeguard',
+    authDomain: 'cmsc190-lifeguard.firebaseapp.com',
+    storageBucket: 'cmsc190-lifeguard.appspot.com',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBvADh2jTDRtjCQCoGwM3zvoXs9zXw45ks',
-    appId: '1:366120527293:android:65f36b519f92454f7eded4',
-    messagingSenderId: '366120527293',
-    projectId: 'cmsc190-jlpp',
-    storageBucket: 'cmsc190-jlpp.appspot.com',
+    apiKey: 'AIzaSyBVzTXbqWFXKeMLndMaqkK_D_haH43x5E8',
+    appId: '1:174727970445:android:a21badd702ebe14cc6ecc4',
+    messagingSenderId: '174727970445',
+    projectId: 'cmsc190-lifeguard',
+    storageBucket: 'cmsc190-lifeguard.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBpP3u5e6Z4dGMZhF1pGi640_gMRWdzP2s',
-    appId: '1:366120527293:ios:453facbcb5a27de47eded4',
-    messagingSenderId: '366120527293',
-    projectId: 'cmsc190-jlpp',
-    storageBucket: 'cmsc190-jlpp.appspot.com',
-    iosClientId: '366120527293-ph4866cnlpfbpu2g1aa8vppj1vulbpmb.apps.googleusercontent.com',
+    apiKey: 'AIzaSyCGVkA875mKTpsAF6skaJfyTSKYiIaelw8',
+    appId: '1:174727970445:ios:cb0f3ae4bf55cc21c6ecc4',
+    messagingSenderId: '174727970445',
+    projectId: 'cmsc190-lifeguard',
+    storageBucket: 'cmsc190-lifeguard.appspot.com',
+    iosClientId: '174727970445-pgfv4fin7g21c0panh5hgffbr1lj91vt.apps.googleusercontent.com',
     iosBundleId: 'com.example.alphaLifeguard',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyBpP3u5e6Z4dGMZhF1pGi640_gMRWdzP2s',
-    appId: '1:366120527293:ios:453facbcb5a27de47eded4',
-    messagingSenderId: '366120527293',
-    projectId: 'cmsc190-jlpp',
-    storageBucket: 'cmsc190-jlpp.appspot.com',
-    iosClientId: '366120527293-ph4866cnlpfbpu2g1aa8vppj1vulbpmb.apps.googleusercontent.com',
+    apiKey: 'AIzaSyCGVkA875mKTpsAF6skaJfyTSKYiIaelw8',
+    appId: '1:174727970445:ios:cb0f3ae4bf55cc21c6ecc4',
+    messagingSenderId: '174727970445',
+    projectId: 'cmsc190-lifeguard',
+    storageBucket: 'cmsc190-lifeguard.appspot.com',
+    iosClientId: '174727970445-pgfv4fin7g21c0panh5hgffbr1lj91vt.apps.googleusercontent.com',
     iosBundleId: 'com.example.alphaLifeguard',
   );
 }
