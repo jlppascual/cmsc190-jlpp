@@ -1,13 +1,18 @@
-import 'package:alpha_lifeguard/pages/regular_user/userHome.dart';
+import 'package:alpha_lifeguard/models/user.dart';
+import 'package:alpha_lifeguard/pages/emergency_establishment/main_home.dart';
+import 'package:alpha_lifeguard/pages/regular_user/main_home.dart';
 import 'package:alpha_lifeguard/pages/shared/welcome_screen.dart';
+import 'package:alpha_lifeguard/services/firestore_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class AuthService extends GetxController {
-  static AuthService get instance => Get.find();
+import '../models/establishment.dart';
+
+class UserAuthService extends GetxController {
+  static UserAuthService get instance => Get.find();
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
@@ -28,15 +33,31 @@ class AuthService extends GetxController {
     //currently logged in/ if logged out
     firebaseUser = Rx<User?>(_auth.currentUser);
     firebaseUser.bindStream(_auth.userChanges()); //always listening to the user
-     
+
     //listener, callback
     ever(firebaseUser, _setInitialScreen);
   }
 
-  _setInitialScreen(User? user) {
+  _setInitialScreen(User? user) async {
+    DocumentSnapshot? storeUser;
+
+    if (user != null) {
+      await Future.delayed(const Duration(seconds: 5), () {
+        //load
+      });
+      storeUser =
+          await _firebaseFirestore.collection("users").doc(user.uid).get();
+    }
+
     user == null
         ? Get.offAll(() => const WelcomeScreen())
-        : Get.offAll(() => const UserHome());
+        : storeUser?['role'] == 'regular_user'
+            ? Get.offAll(() => const UserMain())
+            : storeUser?['role'] == 'regular_user'
+                ? Get.offAll(() => const EstablishmentMain())
+                : {
+                    //do nothing
+                  };
   }
 
 // REGULAR USER OPERATIONS
@@ -49,17 +70,6 @@ class AuthService extends GetxController {
     //key value pairs
     final SharedPreferences s = await SharedPreferences.getInstance();
     _isSignedIn = s.getBool("signed_in") ?? false;
-    // notifyListeners();
-  }
-
-  Future<void> createUserWithEmailandPassword(
-      String email, String password) async {
-    try {
-      await _auth.createUserWithEmailAndPassword(
-          email: email, password: password);
-    } on FirebaseAuthException catch (e) {
-      debugPrint(e.toString());
-    } catch (_) {}
   }
 
   // register with phone number
@@ -93,10 +103,12 @@ class AuthService extends GetxController {
         });
   }
 
-  Future<bool> verifyOTP(
-      {required BuildContext context,
-      required String otp,
-      required Function onSuccess}) async {
+  Future<bool> verifyOTP({
+    required BuildContext context,
+    required String otp,
+    required String phoneNumber,
+    required String role,
+  }) async {
     _isLoading = true;
     try {
       PhoneAuthCredential credential = PhoneAuthProvider.credential(
@@ -105,28 +117,43 @@ class AuthService extends GetxController {
       User? user = (await _auth.signInWithCredential(credential)).user;
       if (user != null) {
         _uid = user.uid;
-        onSuccess();
+
+        //add user in firestore database
+        var isExisting = await checkExistingUser();
+
+        // if (isExisting == false) {
+        var regUser =
+            RegularUser(uid: uid, phoneNumber: phoneNumber, role: role);
+        await FirestoreService.instance.createUser(regUser);
+        // }
       }
       _isLoading = false;
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(e.toString())));
       _isLoading = false;
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.toString())));
+      _isLoading = false;
     }
-    debugPrint(verificationId.value);
-    var credentials = await _auth.signInWithCredential(
-        PhoneAuthProvider.credential(
-            verificationId: verificationId.value, smsCode: otp));
-    return credentials.user != null ? true : false;
+    try {
+      var credentials = await _auth.signInWithCredential(
+          PhoneAuthProvider.credential(
+              verificationId: verificationId.value, smsCode: otp));
+      return credentials.user != null ? true : false;
+    } on FirebaseAuthException catch (e) {
+      return false;
+    } catch (e) {
+      return false;
+    }
   }
 
   Future<bool> checkExistingUser() async {
     DocumentSnapshot snapshot =
         await _firebaseFirestore.collection("users").doc(_uid).get();
-    debugPrint("uid:$_uid");
-    debugPrint("snapshot!!!=>${snapshot.id}");
-    debugPrint("${snapshot.exists}");
-    if (snapshot.id == _uid) {
+
+    if (snapshot.exists) {
       debugPrint("User exist");
       return true;
     } else {
@@ -149,5 +176,39 @@ class AuthService extends GetxController {
     }
   }
 
-  //EMERGENCY ESTABLISHMENT
+  //ESTABLISHMENT
+  Future<dynamic> createEstablishment(
+      String email, String password, String role) async {
+    try {
+      await _auth.createUserWithEmailAndPassword(
+          email: email, password: password);
+      debugPrint(_auth.currentUser?.uid);
+      _uid = _auth.currentUser?.uid;
+
+      var estab =
+          Establishment(uid: uid, email: email, password: password, role: role);
+      await FirestoreService.instance.createEstablishment(estab);
+      return true;
+    } on FirebaseAuthException catch (e) {
+      debugPrint("ERROR: ${e.code}");
+      return ("ERROR: ${e.code}");
+    } catch (err) {
+      debugPrint("ERROR: ${err.toString()}");
+      return ("ERROR: ${err.toString()}");
+    }
+  }
+
+  Future<dynamic> loginWithEmailAndPassword(
+      String email, String password) async {
+    try {
+      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      User? user = _auth.currentUser;
+      _uid = user?.uid;
+      return user != null ? true : false;
+    } on FirebaseAuthException catch (e) {
+      return e.code;
+    } catch (e) {
+      return e.toString();
+    }
+  }
 }

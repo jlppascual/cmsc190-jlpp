@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:alpha_lifeguard/pages/shared/otp_screen.dart';
-import 'package:alpha_lifeguard/services/signup_controller.dart';
-import 'package:alpha_lifeguard/pages/regular_user/login.dart';
+import 'package:alpha_lifeguard/services/auth_controller.dart';
+import 'package:alpha_lifeguard/pages/regular_user/otp_screen.dart';
 
 class UserRegister extends StatefulWidget {
   const UserRegister({super.key});
@@ -16,7 +15,7 @@ class _UserRegisterState extends State<UserRegister>
   late AnimationController _controller;
 
   final _formKey = GlobalKey<FormState>();
-  final controller = Get.put(SignUpController());
+  final controller = Get.put(AuthController());
   var iColor = Colors.red;
   var iIcon = Icons.clear;
   var textLength = 0;
@@ -92,41 +91,42 @@ class _UserRegisterState extends State<UserRegister>
                                 },
                                 cursorColor: Colors.red,
                                 decoration: InputDecoration(
-                                  filled: true,
-                                  fillColor: Colors.white,
-                                  prefixIcon: Container(
-                                    padding: const EdgeInsets.fromLTRB(
-                                        7.0, 13.0, 0.0, 0.0),
-                                    child: const Text(
-                                      '+63',
-                                      style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.red),
+                                    filled: true,
+                                    fillColor: Colors.white,
+                                    prefixIcon: Container(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          7.0, 13.0, 0.0, 0.0),
+                                      child: const Text(
+                                        '+63',
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.red),
+                                      ),
                                     ),
-                                  ),
-                                  suffixIcon: Container(
-                                    height: 10,
-                                    width: 10,
-                                    margin: const EdgeInsets.all(8.0),
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: textLength == 10
-                                          ? Colors.green
-                                          : Colors.red,
+                                    suffixIcon: Container(
+                                      height: 10,
+                                      width: 10,
+                                      margin: const EdgeInsets.all(8.0),
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: textLength == 10
+                                            ? Colors.green
+                                            : Colors.red,
+                                      ),
+                                      child: Icon(
+                                          textLength == 10
+                                              ? Icons.check
+                                              : Icons.clear,
+                                          color: Colors.white,
+                                          size: 19),
                                     ),
-                                    child: Icon(
-                                        textLength == 10
-                                            ? Icons.check
-                                            : Icons.clear,
-                                        color: Colors.white,
-                                        size: 19),
-                                  ),
-                                  border: const OutlineInputBorder(
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(7))),
-                                  hintText: 'Enter Number',
-                                ),
+                                    border: const OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(7))),
+                                    hintText: 'Enter Number',
+                                    errorStyle:
+                                        const TextStyle(color: Colors.white)),
                               ))
                         ]),
                     const SizedBox(
@@ -148,7 +148,7 @@ class _UserRegisterState extends State<UserRegister>
                                       const SnackBar(
                                           content: Text('Invalid Number!')));
                                 } else {
-                                  SignUpController.instance.phoneAuthentication(
+                                  AuthController.instance.phoneAuthentication(
                                       '+63${controller.phoneNo.text.trim()}');
                                   Get.to(
                                       () => OtpScreen(controller.phoneNo.text));
@@ -156,28 +156,11 @@ class _UserRegisterState extends State<UserRegister>
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
-                                        content:
-                                            Text('Error in registering!')));
+                                        content: Text(
+                                            'Please input correct number!')));
                               }
                             },
-                            child: const Text('Register'))
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text('Already have an account?',
-                            style: TextStyle(color: Colors.white)),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const UserLogin()));
-                          },
-                          child: const Text('Sign in!',
-                              style: TextStyle(color: Colors.blue)),
-                        ),
+                            child: const Text('Continue'))
                       ],
                     ),
                   ],

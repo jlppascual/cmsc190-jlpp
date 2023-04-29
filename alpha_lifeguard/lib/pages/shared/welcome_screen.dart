@@ -1,7 +1,7 @@
 import 'package:alpha_lifeguard/pages/response_unit/login.dart';
 import 'package:flutter/material.dart';
-import 'package:alpha_lifeguard/pages/regular_user/register.dart';
-import 'package:alpha_lifeguard/pages/emergency_establishment/register.dart';
+import 'package:alpha_lifeguard/pages/regular_user/register_page.dart';
+import 'package:alpha_lifeguard/pages/emergency_establishment/register_page.dart';
 
 class WelcomeScreen  extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -20,7 +20,7 @@ class WelcomeScreen  extends StatelessWidget {
                   children: const <Widget>[
                     Positioned(
                         child: Center(
-                            child: Text("REGISTER",
+                            child: Text("LIFEGUARD",
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 40,

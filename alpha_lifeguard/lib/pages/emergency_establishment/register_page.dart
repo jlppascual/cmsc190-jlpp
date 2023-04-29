@@ -1,6 +1,10 @@
+import 'package:alpha_lifeguard/pages/emergency_establishment/home_page.dart';
+import 'package:alpha_lifeguard/pages/emergency_establishment/main_home.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:alpha_lifeguard/pages/emergency_establishment/login.dart';
+import 'package:alpha_lifeguard/pages/emergency_establishment/login_page.dart';
+
+import '../../services/auth_controller.dart';
 
 class EstablishmentRegister extends StatefulWidget {
   const EstablishmentRegister({super.key});
@@ -15,8 +19,7 @@ class _EstablishmentRegister extends State<EstablishmentRegister>
 
   final _formKey = GlobalKey<FormState>();
 
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
+  final controller = Get.put(AuthController());
 
   @override
   void initState() {
@@ -93,19 +96,14 @@ class _EstablishmentRegister extends State<EstablishmentRegister>
                                   SizedBox(
                                       width: 200,
                                       child: TextFormField(
-                                        controller: emailController,
+                                        controller: controller.email,
                                         validator: (val) {
                                           if (val == null || val.isEmpty) {
                                             return 'Please enter email';
                                           }
                                           return null;
                                         },
-                                        // onChanged: (text) {
-                                        //   debugPrint('textfield : $text');
-                                        // },
                                         decoration: const InputDecoration(
-                                            // filled: true,
-                                            // fillColor: Colors.white,
                                             enabledBorder: UnderlineInputBorder(
                                               borderSide: BorderSide(
                                                   color: Colors.black),
@@ -136,19 +134,14 @@ class _EstablishmentRegister extends State<EstablishmentRegister>
                                   SizedBox(
                                       width: 200,
                                       child: TextFormField(
-                                        controller: passwordController,
+                                        controller: controller.password,
                                         validator: (val) {
                                           if (val == null || val.isEmpty) {
                                             return 'Please enter password';
                                           }
                                           return null;
                                         },
-                                        // onChanged: (text) {
-                                        //   debugPrint('textfield : $text');
-                                        // },
                                         decoration: const InputDecoration(
-                                            // filled: true,
-                                            // fillColor: Colors.white,
                                             enabledBorder: UnderlineInputBorder(
                                               borderSide: BorderSide(
                                                   color: Colors.black),
@@ -180,22 +173,30 @@ class _EstablishmentRegister extends State<EstablishmentRegister>
                             backgroundColor: Colors.red[700],
                             foregroundColor: Colors.yellow[100],
                           ),
-                          onPressed: () {
+                          onPressed: () async {
                             if (_formKey.currentState!.validate()) {
-                              //KULANG NG NAV
-                              // Navigator.push(
-                              //     context,
-                              //     MaterialPageRoute(
-                              //         builder: (context) =>
-                              //             const EstablishmentNav()));
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content:
-                                          Text('Successfully registered!')));
+                              var res = await AuthController.instance
+                                  .emailAndPasswordAuthentication(
+                                      controller.email.text.trim(),
+                                      controller.password.text.trim(),
+                                      'establishment');
+
+                              if (res == true) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content:
+                                            Text('Successfully registered!')));
+
+                                Get.to(() => const EstablishmentMain());
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text(res as String)));
+                              }
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                      content: Text('Error in registering!')));
+                                      content: Text(
+                                          'Please fill up all fields properly!')));
                             }
                           },
                           child: const Text('Register'))

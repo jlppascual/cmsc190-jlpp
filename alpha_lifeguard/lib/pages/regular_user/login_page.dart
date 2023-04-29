@@ -1,4 +1,4 @@
-import 'package:alpha_lifeguard/pages/regular_user/userHome.dart';
+import 'package:alpha_lifeguard/pages/regular_user/main_home.dart';
 import 'package:flutter/material.dart';
 
 class UserLogin extends StatefulWidget {
@@ -42,20 +42,7 @@ class _UserLoginState extends State<UserLogin> {
                               borderRadius:
                                   BorderRadius.all(Radius.circular(5)),
                             ),
-                            labelText: "Enter email or phone number"),
-                      ))),
-              Container(
-                  padding: const EdgeInsets.all(20),
-                  alignment: Alignment.center,
-                  child: const SizedBox(
-                      width: 300,
-                      child: TextField(
-                        decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(5)),
-                            ),
-                            labelText: "Enter password"),
+                            labelText: "Enter phone number"),
                       ))),
               Container(
                   padding: const EdgeInsets.all(20),
@@ -65,7 +52,7 @@ class _UserLoginState extends State<UserLogin> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => const UserHome()))
+                                    builder: (context) => const UserMain()))
                           },
                       style: ElevatedButton.styleFrom(
                           shape: const StadiumBorder(),
@@ -82,7 +69,7 @@ class _UserLoginState extends State<UserLogin> {
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    child: const Text('Register!'),
+                    child: const Text('Register!', style: TextStyle(color: Colors.lightBlueAccent),),
                   ),
                 ],
               ),

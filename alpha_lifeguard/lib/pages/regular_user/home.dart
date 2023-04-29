@@ -1,3 +1,4 @@
+import 'package:alpha_lifeguard/services/firestore_service.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -14,6 +15,23 @@ class _HomeNavState extends State<HomeNav> {
 
   double contWidth = 100;
   double contHeight = 80;
+
+  String selectedType = '';
+  final desc = TextEditingController();
+  List<String> months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec'
+  ];
 
   _getImage() async {
     XFile? selectedFile = await _picker.pickImage(
@@ -33,7 +51,7 @@ class _HomeNavState extends State<HomeNav> {
             child: Column(
           children: [
             Container(
-              decoration: BoxDecoration(color: Colors.red),
+              decoration: const BoxDecoration(color: Colors.red),
               child: Padding(
                   padding:
                       const EdgeInsets.symmetric(vertical: 25, horizontal: 15),
@@ -100,7 +118,9 @@ class _HomeNavState extends State<HomeNav> {
                       width: contWidth,
                       height: contHeight,
                       decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: selectedType == 'medical'
+                              ? Colors.green
+                              : Colors.white,
                           border: Border.all(width: 2, color: Colors.green),
                           borderRadius:
                               const BorderRadius.all(Radius.circular(5))),
@@ -108,12 +128,21 @@ class _HomeNavState extends State<HomeNav> {
                         children: [
                           IconButton(
                               onPressed: () {
-                                debugPrint("medical clicked!");
+                                setState(() {
+                                  selectedType = 'medical';
+                                  debugPrint(selectedType);
+                                });
                               },
-                              icon: const Icon(Icons.add, color: Colors.green)),
-                          const Text(
+                              icon: Icon(Icons.add,
+                                  color: selectedType == 'medical'
+                                      ? Colors.white
+                                      : Colors.green)),
+                          Text(
                             "MEDICAL",
-                            style: TextStyle(color: Colors.green),
+                            style: TextStyle(
+                                color: selectedType == 'medical'
+                                    ? Colors.white
+                                    : Colors.green),
                           )
                         ],
                       )),
@@ -121,7 +150,9 @@ class _HomeNavState extends State<HomeNav> {
                       width: contWidth,
                       height: contHeight,
                       decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: selectedType == 'fire'
+                              ? Colors.red
+                              : Colors.white,
                           border: Border.all(width: 2, color: Colors.red),
                           borderRadius:
                               const BorderRadius.all(Radius.circular(5))),
@@ -129,12 +160,20 @@ class _HomeNavState extends State<HomeNav> {
                         children: [
                           IconButton(
                               onPressed: () {
-                                debugPrint("fire clicked!");
+                                setState(() {
+                                  selectedType = 'fire';
+                                  debugPrint(selectedType);
+                                });
                               },
-                              icon:
-                                  const Icon(Icons.warning, color: Colors.red)),
-                          const Text("FIRE",
-                              style: TextStyle(color: Colors.red))
+                              icon: Icon(Icons.warning,
+                                  color: selectedType == 'fire'
+                                      ? Colors.white
+                                      : Colors.red)),
+                          Text("FIRE",
+                              style: TextStyle(
+                                  color: selectedType == 'fire'
+                                      ? Colors.white
+                                      : Colors.red))
                         ],
                       )),
                 ],
@@ -149,7 +188,9 @@ class _HomeNavState extends State<HomeNav> {
                       width: contWidth,
                       height: contHeight,
                       decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: selectedType == 'crime'
+                              ? Colors.black
+                              : Colors.white,
                           border: Border.all(width: 2, color: Colors.black),
                           borderRadius:
                               const BorderRadius.all(Radius.circular(5))),
@@ -157,19 +198,29 @@ class _HomeNavState extends State<HomeNav> {
                         children: [
                           IconButton(
                               onPressed: () {
-                                debugPrint("crime clicked!");
+                                setState(() {
+                                  selectedType = 'crime';
+                                  debugPrint(selectedType);
+                                });
                               },
-                              icon: const Icon(Icons.warehouse,
-                                  color: Colors.black)),
-                          const Text("CRIME",
-                              style: TextStyle(color: Colors.black))
+                              icon: Icon(Icons.warehouse,
+                                  color: selectedType == 'crime'
+                                      ? Colors.white
+                                      : Colors.black)),
+                          Text("CRIME",
+                              style: TextStyle(
+                                  color: selectedType == 'crime'
+                                      ? Colors.white
+                                      : Colors.black))
                         ],
                       )),
                   Container(
                     width: contWidth,
                     height: contHeight,
                     decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: selectedType == 'rescue'
+                            ? Colors.blue
+                            : Colors.white,
                         border: Border.all(width: 2, color: Colors.blue),
                         borderRadius:
                             const BorderRadius.all(Radius.circular(5))),
@@ -177,12 +228,20 @@ class _HomeNavState extends State<HomeNav> {
                       children: [
                         IconButton(
                             onPressed: () {
-                              debugPrint("rescue clicked!");
+                              setState(() {
+                                selectedType = 'rescue';
+                                debugPrint(selectedType);
+                              });
                             },
-                            icon: const Icon(Icons.airplanemode_active,
-                                color: Colors.blue)),
-                        const Text("RESCUE",
-                            style: TextStyle(color: Colors.blue))
+                            icon: Icon(Icons.airplanemode_active,
+                                color: selectedType == 'rescue'
+                                    ? Colors.white
+                                    : Colors.blue)),
+                        Text("RESCUE",
+                            style: TextStyle(
+                                color: selectedType == 'rescue'
+                                    ? Colors.white
+                                    : Colors.blue))
                       ],
                     ),
                   )
@@ -205,23 +264,23 @@ class _HomeNavState extends State<HomeNav> {
                     ),
                   ],
                 )),
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 10),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
               child: SizedBox(
                   width: 380,
                   child: TextField(
-                      maxLines: 3,
-                      keyboardType: TextInputType.multiline,
-                      decoration: InputDecoration(
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(7))),
-                          helperText:
-                              'Would you like to describe in detail what happened?',
-                          hintText:
-                              'Would you like to describe in detail what happened?'))),
+                    maxLines: 3,
+                    keyboardType: TextInputType.multiline,
+                    decoration: const InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(7))),
+                        helperText:
+                            'Would you like to describe in detail what happened?',
+                        hintText: 'What happened?'),
+                    controller: desc,
+                  )),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -251,7 +310,30 @@ class _HomeNavState extends State<HomeNav> {
                     style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red[700]),
                     onPressed: () {
-                      debugPrint("Report clicked!");
+                      if (selectedType == '') {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('Incident Type not selected!')));
+                      }
+                      DateTime today = DateTime.now();
+                      String date =
+                          '${months[today.month - 1]}. ${today.day}, ${today.year}';
+                      String time =
+                          '${(today.hour > 12 ? today.hour - 12 : today.hour)}:${(today.minute.bitLength < 2 ? "0${today.minute}" : today.minute)} ${(today.hour > 12 ? "PM" : "AM")}';
+
+                      try {
+                        FirestoreService.instance.sendReports(selectedType, desc.text, date, time);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Report sent!')));
+
+                            setState(() {
+                              selectedType = '';
+                              desc.clear();
+                            });
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(e.toString())));
+                      }
                     },
                     child: const Text('REPORT')))
           ],

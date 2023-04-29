@@ -1,32 +1,19 @@
-import 'package:alpha_lifeguard/pages/regular_user/userHome.dart';
-import 'package:alpha_lifeguard/pages/shared/welcome_screen.dart';
+import 'package:alpha_lifeguard/pages/regular_user/main_home.dart';
 import 'package:flutter/material.dart';
-import 'package:alpha_lifeguard/services/auth.dart';
+import 'package:alpha_lifeguard/services/user_auth.dart';
 import 'package:get/get.dart';
 
 class OtpController extends GetxController {
   static OtpController get instance => Get.find();
 
-  void verifyOTP(BuildContext context, String otp) async {
-    var isExisting = false;
-    var isVerified = await AuthService.instance.verifyOTP(
+  void verifyOTP(
+      BuildContext context, String otp, String phoneNumber, String role) async {
+    var isVerified = await UserAuthService.instance.verifyOTP(
         context: context,
         otp: otp,
-        onSuccess: () {
-          AuthService.instance.checkExistingUser().then((value) async {
-            debugPrint("VALUE$value");
-            if (value == true) {
-              isExisting = true;
-            } else {
-              isExisting = false;
-            }
-          });
-        });
-    debugPrint("$isVerified $isExisting");
-    isVerified == true
-        ? isExisting == false
-            ? Get.offAll(() => const UserHome())
-            : Get.back()
-        : Get.back();
+        phoneNumber: phoneNumber,
+        role: role,
+        );
+    isVerified == true ? Get.offAll(() => const UserMain()) : Get.back();
   }
 }

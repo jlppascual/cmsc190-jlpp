@@ -1,11 +1,12 @@
-import 'package:alpha_lifeguard/pages/regular_user/userHome.dart';
+import 'package:alpha_lifeguard/pages/regular_user/main_home.dart';
 import 'package:alpha_lifeguard/services/otp_controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pinput/pinput.dart';
 
-import '../../services/auth.dart';
+import '../../services/auth_controller.dart';
+import '../../services/user_auth.dart';
 
 class OtpScreen extends StatefulWidget {
   // const OtpScreen({super.key});
@@ -20,9 +21,8 @@ class OtpScreen extends StatefulWidget {
 
 class _OtpScreenState extends State<OtpScreen> {
   final OtpController otpController = Get.put(OtpController());
-  final GlobalKey<ScaffoldState> _scaffoldkey = GlobalKey<ScaffoldState>();
-  String? _verificationCode;
   final TextEditingController _pinPutController = TextEditingController();
+  final controller = Get.put(AuthController());
 
   final defaultPinTheme = PinTheme(
     width: 56,
@@ -40,26 +40,35 @@ class _OtpScreenState extends State<OtpScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Container(
-      padding: const EdgeInsets.all(5),
+      padding: const EdgeInsets.fromLTRB(10, 5, 10, 0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          IconButton(
-            icon: const Icon(
-              Icons.arrow_back,
-              color: Colors.red,
-            ),
-            onPressed: () {
-              Get.back();
-            },
-          ),
-          const Text(
-            'OTP Verification',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 40.0),
-          ),
+          Container(
+              padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+              alignment: Alignment.topLeft,
+              child: IconButton(
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.red,
+                  ),
+                  onPressed: () {
+                    Get.back();
+                  })),
+          const Padding(
+              padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+              child: Text(
+                'OTP Verification',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 40.0,
+                ),
+              )),
           const SizedBox(height: 30),
-          const Text(
-              "Please enter the OTP Code that we've sent through the number you provided"),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+            child: Text(
+              "Please enter the OTP Code that we've sent through the number you provided")),
           Padding(
               padding: const EdgeInsets.all(30.0),
               child: Pinput(
@@ -79,9 +88,8 @@ class _OtpScreenState extends State<OtpScreen> {
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                           content: Text('Please enter a 6-digit code!')));
                     } else {
-                      debugPrint("OTP is => $_pinPutController");
                       OtpController.instance
-                          .verifyOTP(context, _pinPutController.text);
+                          .verifyOTP(context, _pinPutController.text, controller.phoneNo.text.trim(), 'regular_user');
                     }
                   },
                   child: const Text("Verify"))),
@@ -91,12 +99,16 @@ class _OtpScreenState extends State<OtpScreen> {
             style: TextStyle(
                 fontSize: 14, fontWeight: FontWeight.w400, color: Colors.black),
           ),
-          const SizedBox(height: 20),
-          const Text(
-            "Resend New Code",
-            style: TextStyle(
-                fontSize: 16, fontWeight: FontWeight.bold, color: Colors.red),
-          )
+          const SizedBox(height: 10),
+          TextButton(
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.red[700],
+              ),
+              onPressed: () {
+                AuthController.instance.phoneAuthentication(
+                    '+63${controller.phoneNo.text.trim()}');
+              },
+              child: const Text("Resend New Code")),
         ],
       ),
     ));

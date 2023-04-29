@@ -1,17 +1,17 @@
-import 'package:alpha_lifeguard/pages/regular_user/profile.dart';
+import 'package:alpha_lifeguard/pages/regular_user/profile_page.dart';
 import 'package:flutter/material.dart';
 // import 'package:image_picker/image_picker.dart';
 import 'package:alpha_lifeguard/pages/regular_user/home.dart';
 import 'package:alpha_lifeguard/pages/regular_user/history_nav.dart';
 
-class UserHome extends StatefulWidget {
-  const UserHome({super.key});
+class UserMain extends StatefulWidget {
+  const UserMain({super.key});
 
   @override
-  State<UserHome> createState() => _UserHomeState();
+  State<UserMain> createState() => _UserMainState();
 }
 
-class _UserHomeState extends State<UserHome> {
+class _UserMainState extends State<UserMain> {
   int _selectedIndex = 0;
 
   //list of pages available to the user

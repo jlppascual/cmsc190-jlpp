@@ -1,4 +1,4 @@
-import 'package:alpha_lifeguard/pages/regular_user/userHome.dart';
+import 'package:alpha_lifeguard/pages/regular_user/main_home.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
@@ -77,7 +77,7 @@ class _ResponseLoginState extends State<ResponseLogin> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => const UserHome()))
+                                    builder: (context) => const UserMain()))
                           },
                       style: ElevatedButton.styleFrom(
                           shape: const StadiumBorder(),
@@ -92,7 +92,7 @@ class _ResponseLoginState extends State<ResponseLogin> {
                     onPressed: () {
                       debugPrint("Forgot password clicked!");
                     },
-                    child: const Text('Forgot Password?'),
+                    child: const Text('Forgot Password?', style: TextStyle(color: Colors.white)),
                   ),
                 ],
               ),

@@ -1,4 +1,4 @@
-import 'package:alpha_lifeguard/services/auth.dart';
+import 'package:alpha_lifeguard/services/user_auth.dart';
 import 'package:flutter/material.dart';
 
 class UserProfile extends StatefulWidget {
@@ -153,7 +153,7 @@ class _UserProfileState extends State<UserProfile> {
                               backgroundColor: Colors.yellow[100],
                               foregroundColor: Colors.red[700]),
                           onPressed: () {
-                            AuthService.instance.userSignOut();
+                            UserAuthService.instance.userSignOut();
                           },
                           child: Row(
                             children: const [
