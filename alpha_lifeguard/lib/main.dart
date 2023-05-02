@@ -2,6 +2,7 @@ import 'package:alpha_lifeguard/firebase_options.dart';
 import 'package:alpha_lifeguard/pages/regular_user/login_page.dart';
 import 'package:alpha_lifeguard/pages/regular_user/main_home.dart';
 import 'package:alpha_lifeguard/services/firestore_service.dart';
+import 'package:alpha_lifeguard/services/maps_service.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:alpha_lifeguard/pages/shared/welcome_screen.dart';
@@ -14,8 +15,11 @@ import 'package:get/get.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform)
-      .then((value) =>
-          {Get.put(UserAuthService()), Get.put(FirestoreService())});
+      .then((value) => {
+            Get.put(UserAuthService()),
+            Get.put(FirestoreService()),
+            Get.put(MapServices())
+          });
   runApp(const MyApp());
 }
 
@@ -31,7 +35,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const WelcomeScreen(),
         '/user/register': (context) => const UserRegister(),
-        '/user/login':(context)=> const UserLogin(),
+        '/user/login': (context) => const UserLogin(),
         '/user/home': (context) => const UserMain(),
         '/establishment/register': (context) => const EstablishmentRegister(),
       },

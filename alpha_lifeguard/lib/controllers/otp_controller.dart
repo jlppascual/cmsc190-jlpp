@@ -9,11 +9,14 @@ class OtpController extends GetxController {
   void verifyOTP(
       BuildContext context, String otp, String phoneNumber, String role) async {
     var isVerified = await UserAuthService.instance.verifyOTP(
-        context: context,
-        otp: otp,
-        phoneNumber: phoneNumber,
-        role: role,
-        );
+      context: context,
+      otp: otp,
+      phoneNumber: phoneNumber,
+      role: role,
+    );
+    await Future.delayed(const Duration(seconds: 3), () {
+      //load
+    });
     isVerified == true ? Get.offAll(() => const UserMain()) : Get.back();
   }
 }

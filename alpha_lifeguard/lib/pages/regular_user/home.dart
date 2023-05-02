@@ -1,6 +1,8 @@
-import 'package:alpha_lifeguard/services/firestore_service.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:get/get.dart';
+import 'package:alpha_lifeguard/services/firestore_service.dart';
+import 'maps_page.dart';
 
 class HomeNav extends StatefulWidget {
   const HomeNav({super.key});
@@ -78,12 +80,16 @@ class _HomeNavState extends State<HomeNav> {
                     )
                   ])),
             ),
-            const Padding(
-                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+            Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                 child: SizedBox(
                     width: 350,
                     child: TextField(
-                      decoration: InputDecoration(
+                      onTap: () {
+                        Get.to(() => const UserMapsPage());
+                      },
+                      decoration: const InputDecoration(
                           prefixIcon:
                               Icon(Icons.location_pin, color: Colors.red),
                           filled: true,
@@ -322,14 +328,15 @@ class _HomeNavState extends State<HomeNav> {
                           '${(today.hour > 12 ? today.hour - 12 : today.hour)}:${(today.minute.bitLength < 2 ? "0${today.minute}" : today.minute)} ${(today.hour > 12 ? "PM" : "AM")}';
 
                       try {
-                        FirestoreService.instance.sendReports(selectedType, desc.text, date, time);
+                        FirestoreService.instance
+                            .sendReports(selectedType, desc.text, date, time);
                         ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Report sent!')));
 
-                            setState(() {
-                              selectedType = '';
-                              desc.clear();
-                            });
+                        setState(() {
+                          selectedType = '';
+                          desc.clear();
+                        });
                       } catch (e) {
                         ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text(e.toString())));

@@ -1,12 +1,8 @@
-import 'package:alpha_lifeguard/pages/regular_user/main_home.dart';
-import 'package:alpha_lifeguard/services/otp_controller.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:alpha_lifeguard/controllers/otp_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pinput/pinput.dart';
-
-import '../../services/auth_controller.dart';
-import '../../services/user_auth.dart';
+import '../../controllers/auth_controller.dart';
 
 class OtpScreen extends StatefulWidget {
   // const OtpScreen({super.key});
@@ -66,9 +62,9 @@ class _OtpScreenState extends State<OtpScreen> {
               )),
           const SizedBox(height: 30),
           const Padding(
-            padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-            child: Text(
-              "Please enter the OTP Code that we've sent through the number you provided")),
+              padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+              child: Text(
+                  "Please enter the OTP Code that we've sent through the number you provided")),
           Padding(
               padding: const EdgeInsets.all(30.0),
               child: Pinput(
@@ -88,8 +84,11 @@ class _OtpScreenState extends State<OtpScreen> {
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                           content: Text('Please enter a 6-digit code!')));
                     } else {
-                      OtpController.instance
-                          .verifyOTP(context, _pinPutController.text, controller.phoneNo.text.trim(), 'regular_user');
+                      OtpController.instance.verifyOTP(
+                          context,
+                          _pinPutController.text,
+                          controller.phoneNo.text.trim(),
+                          'regular_user');
                     }
                   },
                   child: const Text("Verify"))),

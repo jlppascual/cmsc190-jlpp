@@ -1,10 +1,9 @@
-import 'package:alpha_lifeguard/pages/emergency_establishment/home_page.dart';
 import 'package:alpha_lifeguard/pages/emergency_establishment/main_home.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:alpha_lifeguard/pages/emergency_establishment/login_page.dart';
 
-import '../../services/auth_controller.dart';
+import '../../controllers/auth_controller.dart';
 
 class EstablishmentRegister extends StatefulWidget {
   const EstablishmentRegister({super.key});

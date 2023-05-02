@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:alpha_lifeguard/services/auth_controller.dart';
+import 'package:alpha_lifeguard/controllers/auth_controller.dart';
 import 'package:alpha_lifeguard/pages/regular_user/otp_screen.dart';
 
 class UserRegister extends StatefulWidget {

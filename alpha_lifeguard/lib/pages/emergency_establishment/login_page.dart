@@ -2,7 +2,7 @@ import 'package:alpha_lifeguard/pages/emergency_establishment/main_home.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../services/auth_controller.dart';
+import '../../controllers/auth_controller.dart';
 
 class EstablishmentLogin extends StatefulWidget {
   const EstablishmentLogin({super.key});

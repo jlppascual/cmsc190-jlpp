@@ -1,5 +1,3 @@
-import 'package:alpha_lifeguard/models/reports.dart';
-
 class RegularUser {
   final String uid;
   final String phoneNumber;

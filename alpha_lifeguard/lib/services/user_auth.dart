@@ -119,9 +119,7 @@ class UserAuthService extends GetxController {
         _uid = user.uid;
 
         //add user in firestore database
-        var isExisting = await checkExistingUser();
 
-        // if (isExisting == false) {
         var regUser =
             RegularUser(uid: uid, phoneNumber: phoneNumber, role: role);
         await FirestoreService.instance.createUser(regUser);
@@ -142,7 +140,7 @@ class UserAuthService extends GetxController {
           PhoneAuthProvider.credential(
               verificationId: verificationId.value, smsCode: otp));
       return credentials.user != null ? true : false;
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException catch (_) {
       return false;
     } catch (e) {
       return false;
