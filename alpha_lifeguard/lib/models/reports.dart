@@ -4,6 +4,7 @@ class Report {
   final String type;
   final String date;
   final String time;
+  final Map<String, dynamic> coordinates;
   bool finished;
   bool addressed;
   String desc;
@@ -16,7 +17,8 @@ class Report {
       this.finished = false,
       this.desc = '',
       required this.date,
-      required this.time});
+      required this.time,
+      required this.coordinates});
 
   Report.fromData(Map<String, dynamic> data)
       : uid = data['uid'],
@@ -26,7 +28,8 @@ class Report {
         finished = data['finished'],
         desc = data['desc'],
         date = data['date'],
-        time = data['time'];
+        time = data['time'],
+        coordinates = data['coordinates'];
 
   Map<String, dynamic> toJson() {
     return {
@@ -36,8 +39,9 @@ class Report {
       'desc': desc,
       'date': date,
       'time': time,
+      'coordinates': coordinates,
       'addressed': addressed,
-      'finished': finished
+      'finished': finished,
     };
   }
 }

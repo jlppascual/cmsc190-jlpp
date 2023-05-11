@@ -87,7 +87,7 @@ class _EstablishmentRegister extends State<EstablishmentRegister>
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
                                 children: <Widget>[
-                                  const Text("Email ",
+                                  const Text("Email: ",
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 15,
@@ -125,7 +125,7 @@ class _EstablishmentRegister extends State<EstablishmentRegister>
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
-                                  const Text("Password ",
+                                  const Text("Password: ",
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 15,
@@ -158,7 +158,41 @@ class _EstablishmentRegister extends State<EstablishmentRegister>
                                             color: Colors.black),
                                       ))
                                 ],
-                              )
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: <Widget>[
+                                  const Text("Type: ",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 15,
+                                          color: Colors.black)),
+                                  DropdownButton<String>(
+                                    hint: const Text('Select'),
+                                    value: controller.type.toString(),
+                                    items: <String>[
+                                      'medical',
+                                      'fire',
+                                      'crime',
+                                      'rescue'
+                                    ].map<DropdownMenuItem<String>>(
+                                        (String value) {
+                                      return DropdownMenuItem<String>(
+                                          value: value,
+                                          child: Text(value,
+                                              style: const TextStyle(
+                                                  fontSize: 14,
+                                                  color: Colors.black)));
+                                    }).toList(),
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        controller.type = newValue!;
+                                      });
+                                    },
+                                  )
+                                ],
+                              ),
                             ])),
                   ),
                   const SizedBox(
@@ -178,7 +212,8 @@ class _EstablishmentRegister extends State<EstablishmentRegister>
                                   .emailAndPasswordAuthentication(
                                       controller.email.text.trim(),
                                       controller.password.text.trim(),
-                                      'establishment');
+                                      'establishment',
+                                      controller.type.toString().trim());
 
                               if (res == true) {
                                 ScaffoldMessenger.of(context).showSnackBar(

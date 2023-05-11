@@ -1,4 +1,5 @@
-import 'package:alpha_lifeguard/pages/regular_user/main_home.dart';
+import 'package:alpha_lifeguard/controllers/responder_login.dart';
+import 'package:alpha_lifeguard/pages/response_unit/main_navigation.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
@@ -10,6 +11,9 @@ class ResponseLogin extends StatefulWidget {
 }
 
 class _ResponseLoginState extends State<ResponseLogin> {
+  final controller = Get.put(ResponderLoginController());
+  final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,58 +48,169 @@ class _ResponseLoginState extends State<ResponseLogin> {
                 ),
               ),
               Container(
-                  padding: const EdgeInsets.all(20),
-                  alignment: Alignment.center,
-                  child: const SizedBox(
-                      width: 300,
-                      child: TextField(
-                        decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(5)),
-                            ),
-                            labelText: "Enter email or phone number"),
-                      ))),
-              Container(
-                  padding: const EdgeInsets.all(20),
-                  alignment: Alignment.center,
-                  child: const SizedBox(
-                      width: 300,
-                      child: TextField(
-                        decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(5)),
-                            ),
-                            labelText: "Enter password"),
-                      ))),
-              Container(
-                  padding: const EdgeInsets.all(20),
-                  alignment: Alignment.center,
-                  child: ElevatedButton(
-                      onPressed: () => {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const UserMain()))
-                          },
-                      style: ElevatedButton.styleFrom(
-                          shape: const StadiumBorder(),
-                          backgroundColor: Colors.white,
-                          foregroundColor: Colors.red),
-                      child:
-                          const Text('LOGIN', style: TextStyle(fontSize: 15)))),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      debugPrint("Forgot password clicked!");
-                    },
-                    child: const Text('Forgot Password?', style: TextStyle(color: Colors.white)),
-                  ),
-                ],
-              ),
+                  padding: const EdgeInsets.fromLTRB(0, 30, 0, 250),
+                  decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(40),
+                          topRight: Radius.circular(40)),
+                      color: Colors.yellow[100]),
+                  child: Column(
+                    children: [
+                      Form(
+                          key: _formKey,
+                          child: Padding(
+                              padding: const EdgeInsets.fromLTRB(10, 0, 15, 0),
+                              child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: <Widget>[
+                                        const Text("Email: ",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 15,
+                                                color: Colors.black)),
+                                        SizedBox(
+                                            width: 200,
+                                            child: TextFormField(
+                                              controller: controller.email,
+                                              validator: (val) {
+                                                if (val == null ||
+                                                    val.isEmpty) {
+                                                  return 'Please enter email';
+                                                }
+                                                return null;
+                                              },
+                                              decoration: const InputDecoration(
+                                                  enabledBorder:
+                                                      UnderlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                        color: Colors.black),
+                                                  ),
+                                                  focusedBorder:
+                                                      UnderlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                        color: Colors.black),
+                                                  ),
+                                                  labelText: "Enter Email",
+                                                  labelStyle: TextStyle(
+                                                      color: Colors.black),
+                                                  errorStyle: TextStyle(
+                                                      color: Colors.red)),
+                                              style: const TextStyle(
+                                                  color: Colors.black),
+                                            )),
+                                      ],
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        const Text("Password: ",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 15,
+                                                color: Colors.black)),
+                                        SizedBox(
+                                            width: 200,
+                                            child: TextFormField(
+                                              controller: controller.password,
+                                              validator: (val) {
+                                                if (val == null ||
+                                                    val.isEmpty) {
+                                                  return 'Please enter password';
+                                                }
+                                                return null;
+                                              },
+                                              decoration: const InputDecoration(
+                                                  enabledBorder:
+                                                      UnderlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                        color: Colors.black),
+                                                  ),
+                                                  focusedBorder:
+                                                      UnderlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                        color: Colors.black),
+                                                  ),
+                                                  labelText: 'Enter Password',
+                                                  labelStyle: TextStyle(
+                                                      color: Colors.black),
+                                                  errorStyle: TextStyle(
+                                                      color: Colors.red)),
+                                              style: const TextStyle(
+                                                  color: Colors.black),
+                                            ))
+                                      ],
+                                    ),
+                                    Container(
+                                        padding: const EdgeInsets.all(20),
+                                        alignment: Alignment.center,
+                                        child: ElevatedButton(
+                                            onPressed: () async {
+                                              if (_formKey.currentState!
+                                                  .validate()) {
+                                                var res =
+                                                    await ResponderLoginController
+                                                        .instance
+                                                        .login(
+                                                            controller
+                                                                .email.text
+                                                                .trim(),
+                                                            controller
+                                                                .password.text
+                                                                .trim());
+                                                if (res == true) {
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(const SnackBar(
+                                                          content: Text(
+                                                              'Successfully registered!')));
+
+                                                  Get.to(() =>
+                                                      const ResponseNav());
+                                                } else {
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(SnackBar(
+                                                          content: Text(
+                                                              res as String)));
+                                                }
+                                              } else {
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(const SnackBar(
+                                                        content: Text(
+                                                            'Please fill up all fields properly!')));
+                                              }
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                                shape: const StadiumBorder(),
+                                                backgroundColor:
+                                                    Colors.red[700],
+                                                foregroundColor:
+                                                    Colors.yellow[100]),
+                                            child: const Text('LOGIN',
+                                                style:
+                                                    TextStyle(fontSize: 15)))),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        TextButton(
+                                          onPressed: () {
+                                            debugPrint(
+                                                "Forgot password clicked!");
+                                          },
+                                          child: Text('Forgot Password?',
+                                              style: TextStyle(
+                                                  color: Colors.red[700])),
+                                        ),
+                                      ],
+                                    ),
+                                  ])))
+                    ],
+                  )),
             ])));
   }
 }

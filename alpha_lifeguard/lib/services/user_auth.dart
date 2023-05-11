@@ -1,15 +1,18 @@
 import 'package:alpha_lifeguard/models/user.dart';
 import 'package:alpha_lifeguard/pages/emergency_establishment/main_home.dart';
 import 'package:alpha_lifeguard/pages/regular_user/main_home.dart';
+import 'package:alpha_lifeguard/pages/response_unit/main_navigation.dart';
 import 'package:alpha_lifeguard/pages/shared/welcome_screen.dart';
 import 'package:alpha_lifeguard/services/firestore_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/establishment.dart';
+import '../models/response_units.dart';
 
 class UserAuthService extends GetxController {
   static UserAuthService get instance => Get.find();
@@ -23,10 +26,15 @@ class UserAuthService extends GetxController {
 
   bool _isSignedIn = false;
   bool get isSignedIn => _isSignedIn;
+  String _userType = '';
+  String get userType => _userType;
   bool _isLoading = false;
   bool get isLoading => _isLoading;
   String? _uid;
   String get uid => _uid!;
+  String? _tempUid;
+  String get tempUid => _tempUid!;
+  
 
   @override
   void onReady() {
@@ -41,23 +49,31 @@ class UserAuthService extends GetxController {
   _setInitialScreen(User? user) async {
     DocumentSnapshot? storeUser;
 
+    final SharedPreferences s = await SharedPreferences.getInstance();
+    var type = s.getString("type");
+
     if (user != null) {
       await Future.delayed(const Duration(seconds: 5), () {
         //load
       });
+
       storeUser =
           await _firebaseFirestore.collection("users").doc(user.uid).get();
     }
 
+    debugPrint(storeUser?.data.toString());
+
     user == null
         ? Get.offAll(() => const WelcomeScreen())
-        : storeUser?['role'] == 'regular_user'
+        : type == 'user'
             ? Get.offAll(() => const UserMain())
-            : storeUser?['role'] == 'regular_user'
+            : type == 'establishment'
                 ? Get.offAll(() => const EstablishmentMain())
-                : {
-                    //do nothing
-                  };
+                : type == 'responder'
+                    ? Get.offAll(() => const ResponseNav())
+                    : {
+                        //do nothing
+                      };
   }
 
 // REGULAR USER OPERATIONS
@@ -70,6 +86,8 @@ class UserAuthService extends GetxController {
     //key value pairs
     final SharedPreferences s = await SharedPreferences.getInstance();
     _isSignedIn = s.getBool("signed_in") ?? false;
+    _userType = s.getString("type") ?? 'none';
+
   }
 
   // register with phone number
@@ -126,6 +144,8 @@ class UserAuthService extends GetxController {
         // }
       }
       _isLoading = false;
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString('type', 'user');
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(e.toString())));
@@ -163,10 +183,12 @@ class UserAuthService extends GetxController {
   //sign out
   Future userSignOut() async {
     final SharedPreferences s = await SharedPreferences.getInstance();
+    await s.setString('type', 'none');
 
     try {
       await _auth.signOut();
       _isSignedIn = false;
+      _userType = 'none';
       s.clear();
     } catch (error) {
       debugPrint(error.toString());
@@ -176,15 +198,17 @@ class UserAuthService extends GetxController {
 
   //ESTABLISHMENT
   Future<dynamic> createEstablishment(
-      String email, String password, String role) async {
+      String email, String password, String role, String type) async {
+    SharedPreferences s = await SharedPreferences.getInstance();
+    await s.setString('type', 'establishment');
+
     try {
       await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
-      debugPrint(_auth.currentUser?.uid);
       _uid = _auth.currentUser?.uid;
 
-      var estab =
-          Establishment(uid: uid, email: email, password: password, role: role);
+      var estab = Establishment(
+          uid: uid, email: email, password: password, role: role, type: type);
       await FirestoreService.instance.createEstablishment(estab);
       return true;
     } on FirebaseAuthException catch (e) {
@@ -198,6 +222,9 @@ class UserAuthService extends GetxController {
 
   Future<dynamic> loginWithEmailAndPassword(
       String email, String password) async {
+    SharedPreferences s = await SharedPreferences.getInstance();
+    await s.setString('type', 'establishment');
+
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
       User? user = _auth.currentUser;
@@ -208,5 +235,64 @@ class UserAuthService extends GetxController {
     } catch (e) {
       return e.toString();
     }
+  }
+
+  Future<dynamic> addResponder(
+      String firstName, String lastName, String email, String password) async {
+    FirebaseApp app = await Firebase.initializeApp(
+        name: 'secondary', options: Firebase.app().options);
+
+    try {
+      await FirebaseAuth.instanceFor(app: app)
+          .createUserWithEmailAndPassword(email: email, password: password);
+      _tempUid = FirebaseAuth.instanceFor(app: app).currentUser?.uid;
+      _uid = _auth.currentUser?.uid;
+
+      var estab = await _firebaseFirestore.collection('users').doc(uid).get();
+
+      var unit = ResponseUnit(
+          uid: tempUid,
+          rsid: uid,
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          type: estab['type'],
+          password: password);
+      await FirestoreService.instance.createResponder(unit);
+      app.delete();
+      return true;
+    } on FirebaseAuthException catch (e) {
+      debugPrint("ERROR: ${e.code}");
+      return ("ERROR: ${e.code}");
+    } catch (err) {
+      debugPrint("ERROR: ${err.toString()}");
+      return ("ERROR: ${err.toString()}");
+    }
+  }
+
+  //RESPONSE UNIT
+  Future<dynamic> responderLogin(String email, String password) async {
+    SharedPreferences s = await SharedPreferences.getInstance();
+    await s.setString('type', 'responder');
+
+    try {
+      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      User? user = _auth.currentUser;
+      _uid = user?.uid;
+
+      return user != null ? true : false;
+    } on FirebaseAuthException catch (e) {
+      return e.code;
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  Future<DocumentSnapshot> getEstablishmentInfo() async {
+    DocumentSnapshot uid = await _firebaseFirestore
+        .collection("response_unit")
+        .doc(_auth.currentUser!.uid)
+        .get();
+    return await _firebaseFirestore.collection("users").doc(uid['rsid']).get();
   }
 }

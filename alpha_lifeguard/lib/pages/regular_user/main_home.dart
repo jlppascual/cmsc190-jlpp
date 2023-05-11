@@ -46,6 +46,8 @@ class _UserMainState extends State<UserMain> {
                 icon: Icon(Icons.person_2_rounded), label: 'Profile'),
           ],
         ),
-        body: pageList.elementAt(_selectedIndex));
+        body: pageList.elementAt(_selectedIndex),
+              floatingActionButtonLocation: FloatingActionButtonLocation.miniEndDocked,
+);
   }
 }

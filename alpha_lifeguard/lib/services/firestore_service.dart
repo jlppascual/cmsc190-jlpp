@@ -4,6 +4,7 @@ import 'package:uuid/uuid.dart';
 import 'package:get/get.dart';
 import '../models/establishment.dart';
 import '../models/reports.dart';
+import '../models/response_units.dart';
 import '../models/user.dart';
 
 class FirestoreService extends GetxController {
@@ -17,6 +18,12 @@ class FirestoreService extends GetxController {
 
   final CollectionReference _reportsCollection =
       FirebaseFirestore.instance.collection('user_reports');
+
+  final CollectionReference _establishmentCollection =
+      FirebaseFirestore.instance.collection('establishments');
+
+  final CollectionReference _responderCollection =
+      FirebaseFirestore.instance.collection('response_units');
 
   String rid = '';
 
@@ -36,7 +43,16 @@ class FirestoreService extends GetxController {
     }
   }
 
-  Future sendReports(String type, String desc, String date, String time) async {
+  Future createResponder(ResponseUnit unit) async {
+    try {
+      return await _responderCollection.doc(unit.uid).set(unit.toJson());
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  Future sendReports(String type, String desc, String date, String time,
+      Map<String, dynamic> coordinates) async {
     var ridGenerator = const Uuid(); //creates unique ids
 
     rid = ridGenerator.v4();
@@ -54,6 +70,7 @@ class FirestoreService extends GetxController {
         type: type,
         date: date,
         time: time,
+        coordinates: coordinates,
         finished: false,
         addressed: false);
 
@@ -74,10 +91,51 @@ class FirestoreService extends GetxController {
     }
   }
 
+  Future<bool> checkIfRsidExist(String rid) async {
+    DocumentSnapshot snapshot =
+        await _firebaseFirestore.collection("response_units").doc(rid).get();
+    if (snapshot.exists) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   Stream<QuerySnapshot<Map<String, dynamic>>> getUserReports() {
     return _firebaseFirestore
         .collection("user_reports")
         .where('uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
         .snapshots();
+  }
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> getEstablishmentResponders() {
+    return _firebaseFirestore
+        .collection("response_units")
+        .where('rsid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .snapshots();
+  }
+
+  Future<Iterable<Report>> getResponderReports() async {
+    var res;
+    await _responderCollection
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get()
+        .then((value) async {
+      res = value['type'];
+    });
+    var data = await _firebaseFirestore
+        .collection("user_reports")
+        .where('type', isEqualTo: res)
+        .get();
+
+    return data.docs
+        .map((doc) => Report(
+            uid: doc['uid'],
+            rid: doc['rid'],
+            coordinates: doc['coordinates'],
+            type: doc['type'],
+            date: doc['date'],
+            time: doc['time']))
+        .toList();
   }
 }

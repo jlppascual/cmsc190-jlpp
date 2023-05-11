@@ -1,3 +1,4 @@
+import 'package:alpha_lifeguard/utils/map_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:get/get.dart';
@@ -17,6 +18,8 @@ class _HomeNavState extends State<HomeNav> {
 
   double contWidth = 100;
   double contHeight = 80;
+
+  Map<String, dynamic> currLocation = MapConstants.defaultLatLng;
 
   String selectedType = '';
   final desc = TextEditingController();
@@ -87,7 +90,8 @@ class _HomeNavState extends State<HomeNav> {
                     width: 350,
                     child: TextField(
                       onTap: () {
-                        Get.to(() => const UserMapsPage());
+                        Get.to(() => UserMapsPage(currLocation: currLocation));
+                        debugPrint(currLocation.toString());
                       },
                       decoration: const InputDecoration(
                           prefixIcon:
@@ -329,7 +333,7 @@ class _HomeNavState extends State<HomeNav> {
 
                       try {
                         FirestoreService.instance
-                            .sendReports(selectedType, desc.text, date, time);
+                            .sendReports(selectedType, desc.text, date, time, currLocation);
                         ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Report sent!')));
 

@@ -1,3 +1,4 @@
+import 'package:alpha_lifeguard/pages/response_unit/profile_page.dart';
 import 'package:flutter/material.dart';
 // import 'package:image_picker/image_picker.dart';
 import 'package:alpha_lifeguard/pages/response_unit/home.dart';
@@ -17,7 +18,7 @@ class _ResponseNavState extends State<ResponseNav> {
   List<Widget> pageList = <Widget>[
     const ResponseHome(),
     const HistoryNav(),
-    // const UserProfile()
+    const RespondersProfile()
   ];
 
   @override

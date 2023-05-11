@@ -1,58 +1,49 @@
 import 'dart:async';
-import 'package:alpha_lifeguard/utils/map_constants.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class MapServices extends GetxController {
   static MapServices get instance => Get.find();
 
-  final CollectionReference _reportsCollection =
-      FirebaseFirestore.instance.collection('user_reports');
+  final bool myLocationEnabled = false;
 
-  Completer<GoogleMapController> _controller = Completer();
+  Future<bool> isGetCurrLocationEnabled() async {
+    var permission = await Geolocator.checkPermission();
 
-  static CameraPosition _googleCamPos = const CameraPosition(
-      target: LatLng(20.42796133580664, 80.885749655962),
-      zoom: MapConstants.defaultCameraZoom,
-      tilt: 0,
-      bearing: 0);
+    if (permission.toString() == 'LocationPermission.always' ||
+        permission.toString() == 'LocationPermission.whileInUse') {
+      return true;
+    } else {
+      return false;
+    }
+  }
 
-  final List<Marker> markers = <Marker>[
-    const Marker(
-        markerId: MarkerId('1'),
-        position: LatLng(20.42796133580664, 80.885749655962),
-        infoWindow: InfoWindow(title: 'Current Location'))
-  ];
+  void requestCurrLocationAccess() async {
+    var res = await isGetCurrLocationEnabled();
+    if (res == true) {
+      // do nothing
+    } else {
+      await Geolocator.requestPermission();
+    }
+  }
 
   Future<Position> getUserCurrentLocation() async {
-    await Geolocator.requestPermission()
-        .then((value) {})
-        .onError((error, stackTrace) async {
-      await Geolocator.requestPermission();
-      debugPrint("ERROR: ${error.toString()}");
-    });
-    return await Geolocator.getCurrentPosition();
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+
+    if (!serviceEnabled) {
+      return Future.error('Location services are disabled');
+    }
+
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    }
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request to get current location');
+    }
+    return await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.best,
+        forceAndroidLocationManager: true);
   }
-
-  CameraPosition getCamPos() {
-    return _googleCamPos;
-  } 
-
-  void updateCamPos(CameraPosition newPos){
-    _googleCamPos = newPos;
-  }
-
-  List<Marker> getMarker() {
-    return markers;
-  }
-
-  Completer<GoogleMapController> getCompleter() {
-    return _controller;
-  }
-
 }
