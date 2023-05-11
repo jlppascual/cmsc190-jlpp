@@ -1,7 +1,7 @@
 import 'package:alpha_lifeguard/firebase_options.dart';
 import 'package:alpha_lifeguard/pages/regular_user/login_page.dart';
 import 'package:alpha_lifeguard/pages/regular_user/main_home.dart';
-import 'package:alpha_lifeguard/services/firestore_service.dart';
+import 'package:alpha_lifeguard/services/user_service.dart';
 import 'package:alpha_lifeguard/services/maps_service.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -21,7 +21,7 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform)
       .then((value) => {
             Get.put(UserAuthService()),
-            Get.put(FirestoreService()),
+            Get.put(UserServices()),
             Get.put(MapServices())
           });
   runApp(const MyApp());

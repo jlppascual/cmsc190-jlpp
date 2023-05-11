@@ -1,9 +1,10 @@
+import 'package:alpha_lifeguard/services/establishment_services.dart';
 import 'package:alpha_lifeguard/services/user_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/new_responders_controller.dart';
-import '../../services/firestore_service.dart';
+import '../../services/user_service.dart';
 
 class EstablishmentHome extends StatefulWidget {
   const EstablishmentHome({super.key});
@@ -178,7 +179,7 @@ class _EstablishmentHomeState extends State<EstablishmentHome> {
               color: Colors.yellow[100],
               borderRadius: BorderRadius.circular(8)),
           child: StreamBuilder(
-              stream: FirestoreService.instance.getEstablishmentResponders(),
+              stream: EstablishmentServices.instance.getEstablishmentResponders(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
                   debugPrint('no data!');

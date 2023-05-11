@@ -1,8 +1,9 @@
 import 'package:alpha_lifeguard/pages/response_unit/report_details.dart';
+import 'package:alpha_lifeguard/services/responder_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../services/firestore_service.dart';
+import '../../services/user_service.dart';
 
 class ResponseHome extends StatefulWidget {
   const ResponseHome({super.key});
@@ -20,7 +21,7 @@ class _ResponseHomeState extends State<ResponseHome> {
       children: [
         Expanded(
           child: FutureBuilder(
-            future: FirestoreService.instance.getResponderReports(),
+            future: ResponderService.instance.getResponderReports(),
             builder: (context, AsyncSnapshot snapshot) {
               List<Widget> children;
 

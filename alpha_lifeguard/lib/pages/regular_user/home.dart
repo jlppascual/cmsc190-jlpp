@@ -2,7 +2,7 @@ import 'package:alpha_lifeguard/utils/map_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:get/get.dart';
-import 'package:alpha_lifeguard/services/firestore_service.dart';
+import 'package:alpha_lifeguard/services/user_service.dart';
 import 'maps_page.dart';
 
 class HomeNav extends StatefulWidget {
@@ -332,7 +332,7 @@ class _HomeNavState extends State<HomeNav> {
                           '${(today.hour > 12 ? today.hour - 12 : today.hour)}:${(today.minute.bitLength < 2 ? "0${today.minute}" : today.minute)} ${(today.hour > 12 ? "PM" : "AM")}';
 
                       try {
-                        FirestoreService.instance
+                        UserServices.instance
                             .sendReports(selectedType, desc.text, date, time, currLocation);
                         ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Report sent!')));

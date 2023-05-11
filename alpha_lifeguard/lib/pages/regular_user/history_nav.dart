@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../services/firestore_service.dart';
+import '../../services/user_service.dart';
 
 class HistoryNav extends StatefulWidget {
   const HistoryNav({super.key});
@@ -51,7 +51,7 @@ class _HistoryNavState extends State<HistoryNav> {
         ),
         Expanded(
             child: StreamBuilder(
-                stream: FirestoreService.instance.getUserReports(),
+                stream: UserServices.instance.getUserReports(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
                     return const Text('no reports sent yet!');

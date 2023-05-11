@@ -3,7 +3,9 @@ import 'package:alpha_lifeguard/pages/emergency_establishment/main_home.dart';
 import 'package:alpha_lifeguard/pages/regular_user/main_home.dart';
 import 'package:alpha_lifeguard/pages/response_unit/main_navigation.dart';
 import 'package:alpha_lifeguard/pages/shared/welcome_screen.dart';
-import 'package:alpha_lifeguard/services/firestore_service.dart';
+import 'package:alpha_lifeguard/services/establishment_services.dart';
+import 'package:alpha_lifeguard/services/responder_service.dart';
+import 'package:alpha_lifeguard/services/user_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -140,7 +142,7 @@ class UserAuthService extends GetxController {
 
         var regUser =
             RegularUser(uid: uid, phoneNumber: phoneNumber, role: role);
-        await FirestoreService.instance.createUser(regUser);
+        await UserServices.instance.createUser(regUser);
         // }
       }
       _isLoading = false;
@@ -209,7 +211,7 @@ class UserAuthService extends GetxController {
 
       var estab = Establishment(
           uid: uid, email: email, password: password, role: role, type: type);
-      await FirestoreService.instance.createEstablishment(estab);
+      await EstablishmentServices.instance.createEstablishment(estab);
       return true;
     } on FirebaseAuthException catch (e) {
       debugPrint("ERROR: ${e.code}");
@@ -258,7 +260,7 @@ class UserAuthService extends GetxController {
           email: email,
           type: estab['type'],
           password: password);
-      await FirestoreService.instance.createResponder(unit);
+      await ResponderService.instance.createResponder(unit);
       app.delete();
       return true;
     } on FirebaseAuthException catch (e) {
