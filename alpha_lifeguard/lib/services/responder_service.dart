@@ -7,10 +7,10 @@ import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import '../models/reports.dart';
 import '../models/response_units.dart';
 
-class ResponderService extends GetxController{
-    static ResponderService get instance => Get.find();
+class ResponderService extends GetxController {
+  static ResponderService get instance => Get.find();
 
-      final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
   final CollectionReference _userCollection =
       FirebaseFirestore.instance.collection('users');
@@ -21,7 +21,7 @@ class ResponderService extends GetxController{
   final CollectionReference _responderCollection =
       FirebaseFirestore.instance.collection('response_units');
 
-        Future createResponder(ResponseUnit unit) async {
+  Future createResponder(ResponseUnit unit) async {
     try {
       return await _responderCollection.doc(unit.uid).set(unit.toJson());
     } catch (e) {
@@ -40,7 +40,13 @@ class ResponderService extends GetxController{
     }
   }
 
-   Future<Iterable<Report>> getResponderReports() async {
+  Future<DocumentSnapshot> getResponderDetails() async {
+    return await _responderCollection
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get();
+  }
+
+   Stream<QuerySnapshot<Map<String, dynamic>>> getResponderReports() async* {
     var res;
     await _responderCollection
         .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -48,20 +54,28 @@ class ResponderService extends GetxController{
         .then((value) async {
       res = value['type'];
     });
-    var data = await _firebaseFirestore
+    yield*  _firebaseFirestore
         .collection("user_reports")
         .where('type', isEqualTo: res)
-        .get();
+        .snapshots();
 
-    return data.docs
-        .map((doc) => Report(
-            uid: doc['uid'],
-            rid: doc['rid'],
-            coordinates: doc['coordinates'],
-            type: doc['type'],
-            date: doc['date'],
-            time: doc['time']))
-        .toList();
+    // return data.docs
+    //     .map((doc) => Report(
+    //         uid: doc['uid'],
+    //         rid: doc['rid'],
+    //         coordinates: doc['coordinates'],
+    //         type: doc['type'],
+    //         date: doc['date'],
+    //         time: doc['time']))
+    //     .toList();
   }
 
+   void addressReport(String rid) async {
+    try {
+      _reportsCollection.doc(rid).update({'addressed': true}).then(
+          (value) => print('successful update!'));
+    } catch (e) {
+      print(e.toString());
+    }
+  }
 }

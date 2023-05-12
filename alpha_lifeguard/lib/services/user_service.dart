@@ -18,9 +18,6 @@ class UserServices extends GetxController {
   final CollectionReference _reportsCollection =
       FirebaseFirestore.instance.collection('user_reports');
 
-  final CollectionReference _responderCollection =
-      FirebaseFirestore.instance.collection('response_units');
-
   String rid = '';
 
   Future createUser(RegularUser user) async {

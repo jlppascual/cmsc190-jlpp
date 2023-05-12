@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../services/responder_service.dart';
+
 class ReportDetailsPage extends StatefulWidget {
   ReportDetailsPage(
       {super.key,
@@ -7,13 +9,15 @@ class ReportDetailsPage extends StatefulWidget {
       required this.time,
       required this.finished,
       required this.addressed,
-      required this.date});
+      required this.date,
+      required this.rid});
 
   final dynamic desc;
   final dynamic date;
   final dynamic time;
   final dynamic finished;
   final dynamic addressed;
+  final dynamic rid;
 
   @override
   State<ReportDetailsPage> createState() => _ReportDetailsPageState();
@@ -49,6 +53,7 @@ class _ReportDetailsPageState extends State<ReportDetailsPage>
               appBar: AppBar(
                 title: const Text('REPORT DETAILS'),
                 bottom: const TabBar(
+                  
                   tabs: <Widget>[
                     Tab(child: Text('REPORT DETAILS')),
                     Tab(child: Text('PERSONAL DETAILS'))
@@ -56,6 +61,7 @@ class _ReportDetailsPageState extends State<ReportDetailsPage>
                 ),
               ),
               body: TabBarView(
+                physics: const NeverScrollableScrollPhysics(),
                 children: [
                   ListView(
                     children: <Widget>[
@@ -165,6 +171,8 @@ class _ReportDetailsPageState extends State<ReportDetailsPage>
                                 onPressed: () {
                                   setState(() {
                                     _isDisabled[1] = false;
+                                    ResponderService.instance
+                                        .addressReport(widget.rid.toString());
                                   });
                                 },
                                 child: const Text('ACKNOWLEDGE'))),

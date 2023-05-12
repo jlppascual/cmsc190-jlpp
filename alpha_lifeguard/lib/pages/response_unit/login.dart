@@ -167,7 +167,7 @@ class _ResponseLoginState extends State<ResponseLogin> {
                                                   ScaffoldMessenger.of(context)
                                                       .showSnackBar(const SnackBar(
                                                           content: Text(
-                                                              'Successfully registered!')));
+                                                              'Successfully logged in!')));
 
                                                   Get.to(() =>
                                                       const ResponseNav());

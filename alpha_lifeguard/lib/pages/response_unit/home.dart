@@ -1,5 +1,6 @@
 import 'package:alpha_lifeguard/pages/response_unit/report_details.dart';
 import 'package:alpha_lifeguard/services/responder_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -13,6 +14,23 @@ class ResponseHome extends StatefulWidget {
 }
 
 class _ResponseHomeState extends State<ResponseHome> {
+  DocumentSnapshot? snapshotUser;
+
+  @override
+  void initState() {
+    // TODO: implement setState
+    super.initState();
+    Future.delayed(Duration.zero, () async {
+      snapshotUser = await _getResponderInfo();
+      return;
+    });
+  }
+
+  Future<DocumentSnapshot> _getResponderInfo() async {
+    var res = await ResponderService.instance.getResponderDetails();
+    return res;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -20,11 +38,10 @@ class _ResponseHomeState extends State<ResponseHome> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
-          child: FutureBuilder(
-            future: ResponderService.instance.getResponderReports(),
+          child: StreamBuilder(
+            stream: ResponderService.instance.getResponderReports(),
             builder: (context, AsyncSnapshot snapshot) {
               List<Widget> children;
-
               if (snapshot.hasData) {
                 children = <Widget>[
                   Container(
@@ -86,7 +103,7 @@ class _ResponseHomeState extends State<ResponseHome> {
                     height: MediaQuery.of(context).size.height - 200,
                     width: MediaQuery.of(context).size.width,
                     child: ListView.builder(
-                        itemCount: snapshot.data.length,
+                        itemCount: snapshot.data!.docs.length,
                         itemBuilder: (context, int index) {
                           return Column(
                             mainAxisAlignment: MainAxisAlignment.start,
@@ -97,11 +114,18 @@ class _ResponseHomeState extends State<ResponseHome> {
                                   child: InkWell(
                                     onTap: () {
                                       Get.to(() => ReportDetailsPage(
-                                          desc: snapshot.data[index].desc,
-                                          time: snapshot.data[index].time,
-                                          date:  snapshot.data[index].date,
-                                          finished: snapshot.data[index].finished,
-                                          addressed: snapshot.data[index].addressed));
+                                          desc: snapshot.data!.docs[index]
+                                              .get('desc'),
+                                          time: snapshot.data!.docs[index]
+                                              .get('time'),
+                                          date: snapshot.data!.docs[index]
+                                              .get('date'),
+                                          finished: snapshot.data!.docs[index]
+                                              .get('finished'),
+                                          addressed: snapshot.data!.docs[index]
+                                            ..get('addressed'),
+                                            rid: snapshot.data!.docs[index]
+                                            .get('rid')));
                                     },
                                     child: Row(
                                       mainAxisAlignment:
@@ -110,42 +134,47 @@ class _ResponseHomeState extends State<ResponseHome> {
                                           CrossAxisAlignment.center,
                                       mainAxisSize: MainAxisSize.max,
                                       children: [
-                                        Text('${snapshot.data[index].date}'),
-                                        Text('${snapshot.data[index].type}'),
-                                        Text('${snapshot.data[index].time}'),
+                                        Text(
+                                            '${snapshot.data!.docs[index].get('date')}'),
+                                        Text(
+                                            '${snapshot.data!.docs[index].get('type')}'),
+                                        Text(
+                                            '${snapshot.data!.docs[index].get('time')}'),
                                         TextButton(
                                             onPressed: () {
-                                              debugPrint('eme');
+                                              setState(() {
+                                                ResponderService.instance
+                                                    .addressReport(snapshot
+                                                        .data!.docs[index]
+                                                        .get('rid'));
+                                              });
                                             },
                                             style: TextButton.styleFrom(
-                                                shape:
-                                                    const RoundedRectangleBorder(
-                                                        borderRadius:
-                                                            BorderRadius.all(
-                                                                Radius.circular(
-                                                                    5))),
+                                                shape: const RoundedRectangleBorder(
+                                                    borderRadius: BorderRadius.all(
+                                                        Radius.circular(5))),
                                                 backgroundColor: snapshot
-                                                            .data[index]
-                                                            .finished ==
+                                                            .data!.docs[index]
+                                                            .get('finished') ==
                                                         true
                                                     ? Colors.green
-                                                    : snapshot.data[index]
-                                                                .addressed ==
+                                                    : snapshot.data!.docs[index]
+                                                                .get(
+                                                                    'addressed') ==
                                                             true
                                                         ? Colors.yellow[700]
                                                         : Colors.red,
                                                 foregroundColor: Colors.white),
-                                            child: Text(
-                                                snapshot.data[index].finished ==
+                                            child: Text(snapshot
+                                                        .data!.docs[index]
+                                                        .get('finished') ==
+                                                    true
+                                                ? 'resolved'
+                                                : snapshot.data!.docs[index]
+                                                            .get('addressed') ==
                                                         true
-                                                    ? 'resolved'
-                                                    : snapshot.data[index]
-                                                                .addressed ==
-                                                            true
-                                                        ? 'acknowledged'
-                                                        : 'new'
-                                                            .toString()
-                                                            .toUpperCase())),
+                                                    ? 'acknowledged'
+                                                    : 'new'.toString().toUpperCase())),
                                       ],
                                     ),
                                   )),

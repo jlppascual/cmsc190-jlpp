@@ -1,6 +1,8 @@
 import 'package:alpha_lifeguard/firebase_options.dart';
 import 'package:alpha_lifeguard/pages/regular_user/login_page.dart';
 import 'package:alpha_lifeguard/pages/regular_user/main_home.dart';
+import 'package:alpha_lifeguard/services/establishment_services.dart';
+import 'package:alpha_lifeguard/services/responder_service.dart';
 import 'package:alpha_lifeguard/services/user_service.dart';
 import 'package:alpha_lifeguard/services/maps_service.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +24,10 @@ void main() async {
       .then((value) => {
             Get.put(UserAuthService()),
             Get.put(UserServices()),
-            Get.put(MapServices())
+            Get.put(MapServices()),
+            Get.put(UserServices()),
+            Get.put(ResponderService()),
+            Get.put(EstablishmentServices())
           });
   runApp(const MyApp());
 }
