@@ -21,7 +21,7 @@ class _HistoryNavState extends State<HistoryNav> {
             color: Colors.red,
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 15),
+            padding: const EdgeInsets.fromLTRB(15, 45,15, 15),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [

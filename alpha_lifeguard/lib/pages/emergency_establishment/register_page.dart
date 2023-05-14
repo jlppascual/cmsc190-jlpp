@@ -35,46 +35,47 @@ class _EstablishmentRegister extends State<EstablishmentRegister>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.yellow[100],
         body: SingleChildScrollView(
             child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Container(
-                padding: const EdgeInsets.fromLTRB(10, 80, 0, 0),
+                padding: const EdgeInsets.fromLTRB(10, 70, 0, 0),
                 alignment: Alignment.topLeft,
                 child: IconButton(
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.arrow_back,
-                      color: Colors.white,
+                      color: Colors.red[700],
                     ),
                     onPressed: () {
                       Get.back();
                     })),
-            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              SizedBox(
-                  height: 150,
-                  child: Stack(
-                    children: const <Widget>[
-                      Positioned(
-                          child: Center(
-                              child: Text("REGISTER",
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 40,
-                                      fontWeight: FontWeight.bold))))
-                    ],
-                  ))
-            ]),
+            SizedBox(
+                height: 180,
+                child: Stack(
+                  children: <Widget>[
+                    Positioned(
+                        child:
+                            Center(child: Image.asset('assets/word_logo.png'))),
+                  ],
+                )),
             Container(
                 padding: const EdgeInsets.fromLTRB(0, 30, 0, 200),
                 decoration: BoxDecoration(
                   borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(40),
                       topRight: Radius.circular(40)),
-                  color: Colors.yellow[100],
+                  color: Colors.red[700],
                 ),
                 child: Column(children: [
+                  const Center(
+                      child: Text("REGISTER",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 35,
+                              fontWeight: FontWeight.bold))),
+                  const SizedBox(height: 30),
                   Form(
                     key: _formKey,
                     child: Padding(
@@ -87,11 +88,11 @@ class _EstablishmentRegister extends State<EstablishmentRegister>
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
                                 children: <Widget>[
-                                  const Text("Email: ",
+                                  Text("Email: ",
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 15,
-                                          color: Colors.black)),
+                                          color: Colors.yellow[100])),
                                   SizedBox(
                                       width: 200,
                                       child: TextFormField(
@@ -102,20 +103,22 @@ class _EstablishmentRegister extends State<EstablishmentRegister>
                                           }
                                           return null;
                                         },
-                                        decoration: const InputDecoration(
-                                            enabledBorder: UnderlineInputBorder(
+                                        decoration: InputDecoration(
+                                            enabledBorder:
+                                                const UnderlineInputBorder(
                                               borderSide: BorderSide(
                                                   color: Colors.black),
                                             ),
-                                            focusedBorder: UnderlineInputBorder(
+                                            focusedBorder:
+                                                const UnderlineInputBorder(
                                               borderSide: BorderSide(
                                                   color: Colors.black),
                                             ),
                                             labelText: "Enter Email",
-                                            labelStyle:
-                                                TextStyle(color: Colors.black),
-                                            errorStyle:
-                                                TextStyle(color: Colors.red)),
+                                            labelStyle: TextStyle(
+                                                color: Colors.yellow[100]),
+                                            errorStyle: const TextStyle(
+                                                color: Colors.white)),
                                         style: const TextStyle(
                                             color: Colors.black),
                                       )),
@@ -125,11 +128,11 @@ class _EstablishmentRegister extends State<EstablishmentRegister>
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
-                                  const Text("Password: ",
+                                  Text("Password: ",
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 15,
-                                          color: Colors.black)),
+                                          color: Colors.yellow[100])),
                                   SizedBox(
                                       width: 200,
                                       child: TextFormField(
@@ -140,20 +143,22 @@ class _EstablishmentRegister extends State<EstablishmentRegister>
                                           }
                                           return null;
                                         },
-                                        decoration: const InputDecoration(
-                                            enabledBorder: UnderlineInputBorder(
+                                        decoration: InputDecoration(
+                                            enabledBorder:
+                                                const UnderlineInputBorder(
                                               borderSide: BorderSide(
                                                   color: Colors.black),
                                             ),
-                                            focusedBorder: UnderlineInputBorder(
+                                            focusedBorder:
+                                                const UnderlineInputBorder(
                                               borderSide: BorderSide(
                                                   color: Colors.black),
                                             ),
                                             labelText: 'Enter Password',
-                                            labelStyle:
-                                                TextStyle(color: Colors.black),
-                                            errorStyle:
-                                                TextStyle(color: Colors.red)),
+                                            labelStyle: TextStyle(
+                                                color: Colors.yellow[100]),
+                                            errorStyle: const TextStyle(
+                                                color: Colors.white)),
                                         style: const TextStyle(
                                             color: Colors.black),
                                       ))
@@ -163,11 +168,11 @@ class _EstablishmentRegister extends State<EstablishmentRegister>
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceAround,
                                 children: <Widget>[
-                                  const Text("Type: ",
+                                  Text("Type: ",
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 15,
-                                          color: Colors.black)),
+                                          color: Colors.yellow[100])),
                                   DropdownButton<String>(
                                     hint: const Text('Select'),
                                     value: controller.type.toString(),
@@ -196,51 +201,54 @@ class _EstablishmentRegister extends State<EstablishmentRegister>
                             ])),
                   ),
                   const SizedBox(
-                    height: 70,
+                    height: 50,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red[700],
-                            foregroundColor: Colors.yellow[100],
-                          ),
-                          onPressed: () async {
-                            if (_formKey.currentState!.validate()) {
-                              var res = await AuthController.instance
-                                  .emailAndPasswordAuthentication(
-                                      controller.email.text.trim(),
-                                      controller.password.text.trim(),
-                                      'establishment',
-                                      controller.type.toString().trim());
+                      SizedBox(
+                          width: 150,
+                          height: 40,
+                          child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.yellow[100],
+                                foregroundColor: Colors.red[700],
+                              ),
+                              onPressed: () async {
+                                if (_formKey.currentState!.validate()) {
+                                  var res = await AuthController.instance
+                                      .emailAndPasswordAuthentication(
+                                          controller.email.text.trim(),
+                                          controller.password.text.trim(),
+                                          'establishment',
+                                          controller.type.toString().trim());
 
-                              if (res == true) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content:
-                                            Text('Successfully registered!')));
+                                  if (res == true) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            content: Text(
+                                                'Successfully registered!')));
 
-                                Get.to(() => const EstablishmentMain());
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text(res as String)));
-                              }
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text(
-                                          'Please fill up all fields properly!')));
-                            }
-                          },
-                          child: const Text('Register'))
+                                    Get.to(() => const EstablishmentMain());
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text(res as String)));
+                                  }
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text(
+                                              'Please fill up all fields properly!')));
+                                }
+                              },
+                              child: const Text('REGISTER')))
                     ],
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Text('Already have an account?',
-                          style: TextStyle(color: Colors.black)),
+                          style: TextStyle(color: Colors.white)),
                       TextButton(
                         onPressed: () {
                           Navigator.push(

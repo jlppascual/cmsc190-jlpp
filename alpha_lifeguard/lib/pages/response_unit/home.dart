@@ -123,9 +123,10 @@ class _ResponseHomeState extends State<ResponseHome> {
                                           finished: snapshot.data!.docs[index]
                                               .get('finished'),
                                           addressed: snapshot.data!.docs[index]
-                                            ..get('addressed'),
+                                            .get('addressed'),
                                             rid: snapshot.data!.docs[index]
-                                            .get('rid')));
+                                            .get('rid'),
+                                            userLoc: snapshot.data!.docs[index].get('coordinates')));
                                     },
                                     child: Row(
                                       mainAxisAlignment:

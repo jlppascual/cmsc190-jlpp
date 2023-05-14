@@ -17,7 +17,7 @@ class _ResponseLoginState extends State<ResponseLogin> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.yellow[100],
         body: SingleChildScrollView(
             child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -27,33 +27,29 @@ class _ResponseLoginState extends State<ResponseLogin> {
                   padding: const EdgeInsets.fromLTRB(10, 80, 0, 0),
                   alignment: Alignment.topLeft,
                   child: IconButton(
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.arrow_back,
-                        color: Colors.white,
+                        color: Colors.red[700],
                       ),
                       onPressed: () {
                         Get.back();
                       })),
-              Container(
-                padding: const EdgeInsets.all(50),
-                child: const Align(
-                  alignment: Alignment.center,
-                  child: Text(
-                    "SIGN IN",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 40,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
+              SizedBox(
+                  height: 190,
+                  child: Stack(
+                    children: <Widget>[
+                      Positioned(
+                          child: Center(
+                              child: Image.asset('assets/word_logo.png'))),
+                    ],
+                  )),
               Container(
                   padding: const EdgeInsets.fromLTRB(0, 30, 0, 250),
                   decoration: BoxDecoration(
                       borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(40),
                           topRight: Radius.circular(40)),
-                      color: Colors.yellow[100]),
+                      color: Colors.red[700]),
                   child: Column(
                     children: [
                       Form(
@@ -72,7 +68,7 @@ class _ResponseLoginState extends State<ResponseLogin> {
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 15,
-                                                color: Colors.black)),
+                                                color: Colors.white)),
                                         SizedBox(
                                             width: 200,
                                             child: TextFormField(
@@ -84,24 +80,24 @@ class _ResponseLoginState extends State<ResponseLogin> {
                                                 }
                                                 return null;
                                               },
-                                              decoration: const InputDecoration(
+                                              decoration:  InputDecoration(
                                                   enabledBorder:
-                                                      UnderlineInputBorder(
+                                                      const UnderlineInputBorder(
                                                     borderSide: BorderSide(
-                                                        color: Colors.black),
+                                                        color: Colors.white),
                                                   ),
                                                   focusedBorder:
-                                                      UnderlineInputBorder(
+                                                      const UnderlineInputBorder(
                                                     borderSide: BorderSide(
-                                                        color: Colors.black),
+                                                        color: Colors.white),
                                                   ),
                                                   labelText: "Enter Email",
-                                                  labelStyle: TextStyle(
-                                                      color: Colors.black),
+                                                  labelStyle: const TextStyle(
+                                                      color: Colors.white),
                                                   errorStyle: TextStyle(
-                                                      color: Colors.red)),
+                                                      color: Colors.yellow[100])),
                                               style: const TextStyle(
-                                                  color: Colors.black),
+                                                  color: Colors.white),
                                             )),
                                       ],
                                     ),
@@ -113,7 +109,7 @@ class _ResponseLoginState extends State<ResponseLogin> {
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 15,
-                                                color: Colors.black)),
+                                                color: Colors.white)),
                                         SizedBox(
                                             width: 200,
                                             child: TextFormField(
@@ -125,22 +121,22 @@ class _ResponseLoginState extends State<ResponseLogin> {
                                                 }
                                                 return null;
                                               },
-                                              decoration: const InputDecoration(
+                                              decoration:  InputDecoration(
                                                   enabledBorder:
-                                                      UnderlineInputBorder(
+                                                      const UnderlineInputBorder(
                                                     borderSide: BorderSide(
-                                                        color: Colors.black),
+                                                        color: Colors.white),
                                                   ),
                                                   focusedBorder:
-                                                      UnderlineInputBorder(
+                                                      const UnderlineInputBorder(
                                                     borderSide: BorderSide(
-                                                        color: Colors.black),
+                                                        color: Colors.white),
                                                   ),
                                                   labelText: 'Enter Password',
-                                                  labelStyle: TextStyle(
-                                                      color: Colors.black),
+                                                  labelStyle: const TextStyle(
+                                                      color: Colors.white),
                                                   errorStyle: TextStyle(
-                                                      color: Colors.red)),
+                                                      color: Colors.yellow[100])),
                                               style: const TextStyle(
                                                   color: Colors.black),
                                             ))
@@ -149,12 +145,14 @@ class _ResponseLoginState extends State<ResponseLogin> {
                                     Container(
                                         padding: const EdgeInsets.all(20),
                                         alignment: Alignment.center,
-                                        child: ElevatedButton(
-                                            onPressed: () async {
-                                              if (_formKey.currentState!
-                                                  .validate()) {
-                                                var res =
-                                                    await ResponderLoginController
+                                        child: SizedBox(
+                                            width: 150,
+                                            height: 40,
+                                            child: ElevatedButton(
+                                                onPressed: () async {
+                                                  if (_formKey.currentState!
+                                                      .validate()) {
+                                                    var res = await ResponderLoginController
                                                         .instance
                                                         .login(
                                                             controller
@@ -163,36 +161,40 @@ class _ResponseLoginState extends State<ResponseLogin> {
                                                             controller
                                                                 .password.text
                                                                 .trim());
-                                                if (res == true) {
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(const SnackBar(
-                                                          content: Text(
-                                                              'Successfully logged in!')));
+                                                    if (res == true) {
+                                                      ScaffoldMessenger.of(
+                                                              context)
+                                                          .showSnackBar(
+                                                              const SnackBar(
+                                                                  content: Text(
+                                                                      'Successfully logged in!')));
 
-                                                  Get.to(() =>
-                                                      const ResponseNav());
-                                                } else {
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(SnackBar(
-                                                          content: Text(
-                                                              res as String)));
-                                                }
-                                              } else {
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(const SnackBar(
-                                                        content: Text(
-                                                            'Please fill up all fields properly!')));
-                                              }
-                                            },
-                                            style: ElevatedButton.styleFrom(
-                                                shape: const StadiumBorder(),
-                                                backgroundColor:
-                                                    Colors.red[700],
-                                                foregroundColor:
-                                                    Colors.yellow[100]),
-                                            child: const Text('LOGIN',
-                                                style:
-                                                    TextStyle(fontSize: 15)))),
+                                                      Get.to(() =>
+                                                          const ResponseNav());
+                                                    } else {
+                                                      ScaffoldMessenger.of(
+                                                              context)
+                                                          .showSnackBar(SnackBar(
+                                                              content: Text(res
+                                                                  as String)));
+                                                    }
+                                                  } else {
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .showSnackBar(
+                                                            const SnackBar(
+                                                                content: Text(
+                                                                    'Please fill up all fields properly!')));
+                                                  }
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                    backgroundColor:
+                                                        Colors.yellow[100],
+                                                    foregroundColor:
+                                                        Colors.red[700]),
+                                                child: const Text('LOGIN',
+                                                    style: TextStyle(
+                                                        fontSize: 15))))),
                                     Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
@@ -202,9 +204,9 @@ class _ResponseLoginState extends State<ResponseLogin> {
                                             debugPrint(
                                                 "Forgot password clicked!");
                                           },
-                                          child: Text('Forgot Password?',
+                                          child: const Text('Forgot Password?',
                                               style: TextStyle(
-                                                  color: Colors.red[700])),
+                                                  color: Colors.white)),
                                         ),
                                       ],
                                     ),

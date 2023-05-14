@@ -14,9 +14,8 @@ class OtpController extends GetxController {
       phoneNumber: phoneNumber,
       role: role,
     );
-    await Future.delayed(const Duration(seconds: 3), () {
-      //load
+    Future.delayed(Duration.zero, () {
+      isVerified == true ? Get.offAll(() => const UserMain()) : Get.back();
     });
-    isVerified == true ? Get.offAll(() => const UserMain()) : Get.back();
   }
 }

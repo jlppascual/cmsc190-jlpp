@@ -1,5 +1,4 @@
 import 'package:alpha_lifeguard/firebase_options.dart';
-import 'package:alpha_lifeguard/pages/regular_user/login_page.dart';
 import 'package:alpha_lifeguard/pages/regular_user/main_home.dart';
 import 'package:alpha_lifeguard/services/establishment_services.dart';
 import 'package:alpha_lifeguard/services/responder_service.dart';
@@ -44,7 +43,6 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const WelcomeScreen(),
         '/user/register': (context) => const UserRegister(),
-        '/user/login': (context) => const UserLogin(),
         '/user/home': (context) => const UserMain(),
         '/establishment/register': (context) => const EstablishmentRegister(),
       },
