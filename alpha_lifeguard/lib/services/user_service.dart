@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:uuid/uuid.dart';
 import 'package:get/get.dart';
 import '../models/reports.dart';
-import '../models/response_units.dart';
 import '../models/user.dart';
 
 class UserServices extends GetxController {
@@ -72,6 +71,13 @@ class UserServices extends GetxController {
   Stream<QuerySnapshot<Map<String, dynamic>>> getUserReports() {
     return _firebaseFirestore
         .collection("user_reports")
+        .where('uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> getUserDetails() {
+    return _firebaseFirestore
+        .collection('users')
         .where('uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
         .snapshots();
   }

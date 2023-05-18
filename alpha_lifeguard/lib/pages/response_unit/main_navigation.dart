@@ -1,8 +1,7 @@
+import 'package:alpha_lifeguard/pages/response_unit/history_page.dart';
 import 'package:alpha_lifeguard/pages/response_unit/profile_page.dart';
 import 'package:flutter/material.dart';
-// import 'package:image_picker/image_picker.dart';
 import 'package:alpha_lifeguard/pages/response_unit/home.dart';
-import 'package:alpha_lifeguard/pages/regular_user/history_nav.dart';
 
 class ResponseNav extends StatefulWidget {
   const ResponseNav({super.key});
@@ -17,7 +16,7 @@ class _ResponseNavState extends State<ResponseNav> {
   //list of pages available to the user
   List<Widget> pageList = <Widget>[
     const ResponseHome(),
-    const HistoryNav(),
+    const ResponseUnitHistory(),
     const RespondersProfile()
   ];
 

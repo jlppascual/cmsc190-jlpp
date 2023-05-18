@@ -13,12 +13,6 @@ class EstablishmentServices extends GetxController {
   final CollectionReference _userCollection =
       FirebaseFirestore.instance.collection('users');
 
-  final CollectionReference _reportsCollection =
-      FirebaseFirestore.instance.collection('user_reports');
-      
-  final CollectionReference _establishmentCollection =
-      FirebaseFirestore.instance.collection('establishments');
-
   Future createEstablishment(Establishment user) async {
     try {
       return await _userCollection.doc(user.uid).set(user.toJson());

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../controllers/new_responders_controller.dart';
-import '../../services/user_service.dart';
 
 class EstablishmentHome extends StatefulWidget {
   const EstablishmentHome({super.key});

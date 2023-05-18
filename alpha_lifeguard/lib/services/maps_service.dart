@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 
 class MapServices extends GetxController {
   static MapServices get instance => Get.find();
-
+  
   final bool myLocationEnabled = false;
 
   Future<bool> isGetCurrLocationEnabled() async {

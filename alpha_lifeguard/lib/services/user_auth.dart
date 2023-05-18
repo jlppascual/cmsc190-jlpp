@@ -1,5 +1,6 @@
 import 'package:alpha_lifeguard/models/user.dart';
 import 'package:alpha_lifeguard/pages/emergency_establishment/main_home.dart';
+import 'package:alpha_lifeguard/pages/regular_user/UserInfo.dart';
 import 'package:alpha_lifeguard/pages/regular_user/main_home.dart';
 import 'package:alpha_lifeguard/pages/response_unit/main_navigation.dart';
 import 'package:alpha_lifeguard/pages/shared/welcome_screen.dart';
@@ -13,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../controllers/auth_controller.dart';
 import '../models/establishment.dart';
 import '../models/response_units.dart';
 
@@ -22,6 +24,7 @@ class UserAuthService extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
   late final Rx<User?> firebaseUser;
+  final _controller = Get.put(AuthController());
 
   var verificationId =
       ''.obs; //RxString; will observe changes in the verificationId
@@ -36,7 +39,12 @@ class UserAuthService extends GetxController {
   String get uid => _uid!;
   String? _tempUid;
   String get tempUid => _tempUid!;
-  
+
+  final CollectionReference _userCollection =
+      FirebaseFirestore.instance.collection('users');
+
+  final CollectionReference _responderCollection =
+      FirebaseFirestore.instance.collection('response_units');
 
   @override
   void onReady() {
@@ -49,29 +57,34 @@ class UserAuthService extends GetxController {
   }
 
   _setInitialScreen(User? user) async {
-    DocumentSnapshot? storeUser;
+    
 
     final SharedPreferences s = await SharedPreferences.getInstance();
-    var type = s.getString("type");
 
     if (user != null) {
-      await Future.delayed(const Duration(seconds: 5), () {
+      await Future.delayed(const Duration(seconds: 5), () async {
         //load
+
+        // regularUser =
+        //     await _firebaseFirestore.collection("users").doc(user.uid).get();
+        // responseUnit = await _firebaseFirestore
+        //     .collection("response_units")
+        //     .doc(user.uid)
+        //     .get();
+        // establishment =
+        //     await _firebaseFirestore.collection("users").doc(user.uid).get();
       });
-
-      storeUser =
-          await _firebaseFirestore.collection("users").doc(user.uid).get();
     }
-
-    debugPrint(storeUser?.data.toString());
 
     user == null
         ? Get.offAll(() => const WelcomeScreen())
-        : type == 'user'
-            ? Get.offAll(() => const UserMain())
-            : type == 'establishment'
+        : s.getString("type") == 'user'
+            ? s.getBool("newUser") == false
+                ? Get.offAll(() => const UserMain())
+                : Get.offAll(() => const UserInfoPage())
+            : s.getString("type") == 'establishment'
                 ? Get.offAll(() => const EstablishmentMain())
-                : type == 'responder'
+                : s.getString("type") == 'responder'
                     ? Get.offAll(() => const ResponseNav())
                     : {
                         //do nothing
@@ -89,14 +102,11 @@ class UserAuthService extends GetxController {
     final SharedPreferences s = await SharedPreferences.getInstance();
     _isSignedIn = s.getBool("signed_in") ?? false;
     _userType = s.getString("type") ?? 'none';
-
   }
 
   // register with phone number
   Future phoneAuthentication(String number) async {
     // await PhoneAuthCredential
-    // can optionally add recaptcha (hower ka sa number)
-
     await _auth.verifyPhoneNumber(
         phoneNumber: number,
         verificationCompleted: (PhoneAuthCredential credential) async {
@@ -138,12 +148,12 @@ class UserAuthService extends GetxController {
       if (user != null) {
         _uid = user.uid;
 
-        //add user in firestore database
-
-        var regUser =
-            RegularUser(uid: uid, phoneNumber: phoneNumber, role: role);
-        await UserServices.instance.createUser(regUser);
-        // }
+        //add user in firestore database if user does not exist yet
+        if (await checkExistingUser() == false) {
+          var regUser =
+              RegularUser(uid: uid, phoneNumber: phoneNumber, role: role);
+          await UserServices.instance.createUser(regUser);
+        }
       }
       _isLoading = false;
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -157,6 +167,7 @@ class UserAuthService extends GetxController {
           .showSnackBar(SnackBar(content: Text(e.toString())));
       _isLoading = false;
     }
+    
     try {
       var credentials = await _auth.signInWithCredential(
           PhoneAuthProvider.credential(
@@ -179,6 +190,18 @@ class UserAuthService extends GetxController {
     } else {
       debugPrint("New User");
       return false;
+    }
+  }
+
+  Future<dynamic> updateName() async {
+    try {
+      _userCollection.doc(_uid).update({
+        'firstName': _controller.firstName.text.trim(),
+        'lastName': _controller.lastName.text.trim()
+      });
+      return true;
+    } catch (e) {
+      return ('ERROR: $e');
     }
   }
 
@@ -290,11 +313,15 @@ class UserAuthService extends GetxController {
     }
   }
 
-  Future<DocumentSnapshot> getEstablishmentInfo() async {
-    DocumentSnapshot uid = await _firebaseFirestore
-        .collection("response_unit")
-        .doc(_auth.currentUser!.uid)
-        .get();
-    return await _firebaseFirestore.collection("users").doc(uid['rsid']).get();
+  Future<dynamic> updateResponderName() async {
+    try {
+      _responderCollection.doc(_uid).update({
+        'firstName': _controller.firstName.text.trim(),
+        'lastName': _controller.lastName.text.trim()
+      });
+      return true;
+    } catch (e) {
+      return ('ERROR: $e');
+    }
   }
 }

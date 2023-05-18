@@ -1,4 +1,6 @@
+import 'package:alpha_lifeguard/pages/regular_user/report_details.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../services/user_service.dart';
 
@@ -20,14 +22,14 @@ class _HistoryNavState extends State<HistoryNav> {
           decoration: const BoxDecoration(
             color: Colors.red,
           ),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(15, 45,15, 15),
+          child:const Padding(
+            padding:  EdgeInsets.fromLTRB(15, 45, 15, 15),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
+                  children: [
                     Text(
                       'History',
                       style: TextStyle(
@@ -93,73 +95,94 @@ class _HistoryNavState extends State<HistoryNav> {
                             );
                           } else {
                             index -= 1;
-                            return Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 10),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Text(snapshot.data!.docs[index]
-                                          .get('date')),
-                                      Text(snapshot.data!.docs[index]
-                                          .get('type')),
-                                      Text(snapshot.data!.docs[index]
-                                          .get('time')),
-                                      TextButton(
-                                          onPressed: () {
-                                            debugPrint(snapshot
-                                                        .data!.docs[index]
-                                                        .get('finished') ==
-                                                    true
-                                                ? 'resolved'
-                                                : snapshot.data!.docs[index]
-                                                            .get('addressed') ==
+                            return InkWell(
+                                onTap: () {
+                                  Get.to(() => UserReportDetailsPage(
+                                      desc: snapshot.data!.docs[index]
+                                          .get('desc'),
+                                      time: snapshot.data!.docs[index]
+                                          .get('time'),
+                                      finished: snapshot.data!.docs[index]
+                                          .get('finished'),
+                                      addressed: snapshot.data!.docs[index]
+                                          .get('addressed'),
+                                      date: snapshot.data!.docs[index]
+                                          .get('date'),
+                                      rid:
+                                          snapshot.data!.docs[index].get('rid'),
+                                      userLoc: snapshot.data!.docs[index]
+                                          .get('coordinates')));
+                                },
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 10),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Text(snapshot.data!.docs[index]
+                                              .get('date')),
+                                          Text(snapshot.data!.docs[index]
+                                              .get('type')),
+                                          Text(snapshot.data!.docs[index]
+                                              .get('time')),
+                                          TextButton(
+                                              onPressed: () {
+                                                debugPrint(snapshot
+                                                            .data!.docs[index]
+                                                            .get('finished') ==
                                                         true
-                                                    ? 'acknowledged'
-                                                    : 'new');
-                                          },
-                                          style: TextButton.styleFrom(
-                                              shape: const RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.all(
-                                                      Radius.circular(5))),
-                                              backgroundColor: snapshot
+                                                    ? 'resolved'
+                                                    : snapshot.data!.docs[index]
+                                                                .get(
+                                                                    'addressed') ==
+                                                            true
+                                                        ? 'acknowledged'
+                                                        : 'new');
+                                              },
+                                              style: TextButton.styleFrom(
+                                                  shape: const RoundedRectangleBorder(
+                                                      borderRadius: BorderRadius.all(
+                                                          Radius.circular(5))),
+                                                  backgroundColor: snapshot
+                                                              .data!.docs[index]
+                                                              .get(
+                                                                  'finished') ==
+                                                          true
+                                                      ? Colors.green
+                                                      : snapshot.data!.docs[index].get('addressed') ==
+                                                              true
+                                                          ? Colors.yellow[700]
+                                                          : Colors.red,
+                                                  foregroundColor:
+                                                      Colors.white),
+                                              child: Text(snapshot
                                                           .data!.docs[index]
                                                           .get('finished') ==
                                                       true
-                                                  ? Colors.green
-                                                  : snapshot.data!.docs[index].get(
-                                                              'addressed') ==
+                                                  ? 'resolved'
+                                                  : snapshot.data!.docs[index]
+                                                              .get('addressed') ==
                                                           true
-                                                      ? Colors.yellow[700]
-                                                      : Colors.red,
-                                              foregroundColor: Colors.white),
-                                          child: Text(snapshot.data!.docs[index]
-                                                      .get('finished') ==
-                                                  true
-                                              ? 'resolved'
-                                              : snapshot.data!.docs[index]
-                                                          .get('addressed') ==
-                                                      true
-                                                  ? 'acknowledged'
-                                                  : 'new'.toString().toUpperCase())),
-                                    ],
-                                  ),
-                                ),
-                                const Divider(
-                                  height: 1,
-                                  thickness: 1,
-                                  indent: 15,
-                                  endIndent: 15,
-                                  color: Colors.black45,
-                                )
-                              ],
-                            );
+                                                      ? 'acknowledged'
+                                                      : 'new'.toString().toUpperCase())),
+                                        ],
+                                      ),
+                                    ),
+                                    const Divider(
+                                      height: 1,
+                                      thickness: 1,
+                                      indent: 15,
+                                      endIndent: 15,
+                                      color: Colors.black45,
+                                    )
+                                  ],
+                                ));
                           }
                         });
                   }

@@ -1,19 +1,12 @@
 import 'dart:async';
-
-import 'package:alpha_lifeguard/pages/response_unit/full_map.dart';
+import 'package:alpha_lifeguard/utils/map_constants.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import '../../services/maps_service.dart';
-import '../../services/responder_service.dart';
-import '../../api/api_key.dart';
-
 // ignore: must_be_immutable
-class ReportDetailsPage extends StatefulWidget {
-  ReportDetailsPage(
+class UserReportDetailsPage extends StatefulWidget {
+  UserReportDetailsPage(
       {super.key,
       required this.desc,
       required this.time,
@@ -21,129 +14,47 @@ class ReportDetailsPage extends StatefulWidget {
       required this.addressed,
       required this.date,
       required this.rid,
-      required this.uid,
       required this.userLoc});
 
   final dynamic desc;
   final dynamic date;
   final dynamic time;
   final dynamic finished;
-  final dynamic uid;
   dynamic addressed;
   final dynamic rid;
   final Map<String, dynamic> userLoc;
 
   @override
-  State<ReportDetailsPage> createState() => _ReportDetailsPageState();
+  State<UserReportDetailsPage> createState() => _UserReportDetailsPageState();
 }
 
-class _ReportDetailsPageState extends State<ReportDetailsPage>
+class _UserReportDetailsPageState extends State<UserReportDetailsPage>
     with TickerProviderStateMixin {
-  final List<bool> _isDisabled = [false, true];
   final Completer<GoogleMapController> _controller = Completer();
+  late CameraPosition _googleCamPos;
 
   final List<Marker> markers = <Marker>[];
-
-  List<String> userReportName = <String>[];
-  String phoneNumber = '';
 
   List<LatLng> polyLineCoordinates = [];
 
   Position? currentLocation;
-
-  final LocationSettings locationSettings = const LocationSettings(
-      accuracy: LocationAccuracy.high, distanceFilter: 100);
-
-//get points that forms the route from origin to dest
-  void getPolyPoints() async {
-    PolylinePoints polyLinePoints = PolylinePoints();
-    PolylineResult result = await polyLinePoints.getRouteBetweenCoordinates(
-        googleAPIKey,
-        PointLatLng(widget.userLoc['latitude'], widget.userLoc['longitude']),
-        PointLatLng(
-            markers[1].position.latitude, markers[1].position.longitude));
-
-    if (result.points.isNotEmpty) {
-      result.points.forEach((PointLatLng point) =>
-          polyLineCoordinates.add(LatLng(point.latitude, point.longitude)));
-    }
-    setState(() {
-      //
-    });
-  }
-
-//function that listens for the response unit  location change
-  void getCurrentLocation() async {
-    await MapServices.instance.getUserCurrentLocation().then((value) {
-      setState(() {
-        currentLocation = value;
-      });
-      return;
-    });
-  }
-
-  void getReporterDetails() async {
-    dynamic res =
-        await ResponderService.instance.getUserReporterDetails(widget.uid);
-    setState(() {
-      userReportName.add(res['firstName']);
-      userReportName.add(res['lastName']);
-      phoneNumber = res['phoneNumber'];
-    });
-  }
 
   @override
   void initState() {
     // TODO: implement setState
     super.initState();
 
-    getCurrentLocation();
-    if (widget.finished == true || widget.addressed == true) {
-      setState(() {
-        _isDisabled[1] = false;
-      });
-    }
+    _googleCamPos = CameraPosition(
+        target: LatLng(widget.userLoc['latitude'], widget.userLoc['longitude']),
+        zoom: MapConstants.defaultCameraZoom,
+        tilt: 0,
+        bearing: 0);
 
     markers.add(Marker(
         markerId: const MarkerId('1'),
         position:
             LatLng(widget.userLoc['latitude'], widget.userLoc['longitude']),
         infoWindow: const InfoWindow(title: 'Victim Current Location')));
-
-    Future.delayed(Duration.zero, () async {
-      await MapServices.instance.getUserCurrentLocation().then((value) async {
-        setState(() {
-          markers.add(Marker(
-              markerId: const MarkerId('2'),
-              position: LatLng(value.latitude, value.longitude),
-              infoWindow: const InfoWindow(title: 'My Current Location'),
-              icon: BitmapDescriptor.defaultMarkerWithHue(
-                  BitmapDescriptor.hueBlue)));
-        });
-      });
-      getPolyPoints();
-    });
-
-    //listens to the change in position
-    Geolocator.getPositionStream(locationSettings: locationSettings)
-        .listen((Position? position) async {
-      GoogleMapController googleMapController = await _controller.future;
-
-      setState(() {
-        markers.add(Marker(
-            markerId: const MarkerId('2'),
-            position: LatLng(position!.latitude, position.longitude),
-            infoWindow: const InfoWindow(title: 'My Current Location'),
-            icon: BitmapDescriptor.defaultMarkerWithHue(
-                BitmapDescriptor.hueBlue)));
-        googleMapController.animateCamera(CameraUpdate.newCameraPosition(
-            CameraPosition(
-                target: LatLng(position.latitude, position.longitude))));
-      });
-    });
-
-    //gets the details of the user the report belongs to
-    getReporterDetails();
   }
 
   @override
@@ -151,12 +62,6 @@ class _ReportDetailsPageState extends State<ReportDetailsPage>
     return DefaultTabController(
         length: 2,
         child: Builder(builder: (BuildContext context) {
-          final TabController tabController = DefaultTabController.of(context);
-          tabController.addListener(() {
-            if (_isDisabled[tabController.index] == true) {
-              tabController.index = tabController.previousIndex;
-            } else if (_isDisabled[tabController.index] == false) {}
-          });
           return Scaffold(
               appBar: AppBar(
                 title: const Text('REPORT DETAILS'),
@@ -201,7 +106,7 @@ class _ReportDetailsPageState extends State<ReportDetailsPage>
                       ),
                       Padding(
                         padding: const EdgeInsets.only(left: 15),
-                        child: widget.desc.toString() == ''
+                        child: widget.desc.toString() == 'null'
                             ? const Text('no description written')
                             : Text(widget.desc.toString()),
                       ),
@@ -265,50 +170,6 @@ class _ReportDetailsPageState extends State<ReportDetailsPage>
                               ],
                             )),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            left: 55, top: 30, bottom: 10, right: 55),
-                        child: SizedBox(
-                            width: 10,
-                            height: 30,
-                            child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.red[700],
-                                    foregroundColor: Colors.yellow[100]),
-                                onPressed: widget.addressed == false
-                                    ? () {
-                                        setState(() {
-                                          _isDisabled[1] = false;
-                                          ResponderService.instance
-                                              .addressReport(
-                                                  widget.rid.toString());
-                                          widget.addressed = true;
-                                        });
-                                      }
-                                    : null,
-                                child: const Text('ACKNOWLEDGE'))),
-                      ),
-                      Padding(
-                          padding: const EdgeInsets.only(
-                              left: 55, top: 0, bottom: 0, right: 55),
-                          child: SizedBox(
-                              width: 10,
-                              height: 30,
-                              child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.green[700],
-                                      foregroundColor: Colors.yellow[100]),
-                                  onPressed: widget.addressed == false ||
-                                          widget.finished == true
-                                      ? null
-                                      : () {
-                                          setState(() {
-                                            ResponderService.instance
-                                                .finishReport(
-                                                    widget.rid.toString());
-                                          });
-                                        },
-                                  child: const Text('FINISHED'))))
                     ],
                   ),
                   ListView(
@@ -320,45 +181,63 @@ class _ReportDetailsPageState extends State<ReportDetailsPage>
                               child: Image(
                                   image: NetworkImage(
                                       'https://i.pinimg.com/originals/09/b3/34/09b334fd23b9be6a472a2f3eada61759.jpg')))),
-                      Row(
+                      const Row(
                         mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          const Padding(
+                        children:  [
+                          Padding(
                             padding: EdgeInsets.only(left: 15),
                             child: Text(
-                              'NAME: ',
+                              'NAME',
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.only(left: 15),
+                            padding: EdgeInsets.only(left: 15),
                             child: Text(
-                              userReportName.isEmpty
-                                  ? ' '
-                                  : '${userReportName[0]} ${userReportName[1]}',
+                              'Bae Irene',
                               textAlign: TextAlign.right,
                             ),
                           ),
                         ],
                       ),
-                      Row(
+                      const Row(
                         mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          const Padding(
+                        children:  [
+                          Padding(
                             padding: EdgeInsets.only(left: 15, top: 15),
                             child: Text(
-                              'PHONE NUMBER: ',
+                              'PHONE NUMBER',
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                           ),
                           Padding(
-                              padding: const EdgeInsets.only(left: 15, top: 15),
+                              padding: EdgeInsets.only(left: 15, top: 15),
                               child: Text(
-                                phoneNumber,
+                                '+63 123 456 7890',
                                 textAlign: TextAlign.right,
                               )),
                         ],
                       ),
+                      SizedBox(
+                          width: MediaQuery.of(context).size.width,
+                          height: 300,
+                          child: markers == []
+                              ? const Text('Loading...')
+                              : GoogleMap(
+                                  initialCameraPosition: _googleCamPos,
+                                  markers: Set<Marker>.of(markers),
+                                  mapType: MapType.normal,
+                                  myLocationEnabled: true,
+                                  compassEnabled: true,
+                                  onMapCreated:
+                                      (GoogleMapController controller) {
+                                    if (!_controller.isCompleted) {
+                                      _controller.complete(controller);
+                                    } else {
+                                      // do nothing
+                                    }
+                                  },
+                                )),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -372,16 +251,9 @@ class _ReportDetailsPageState extends State<ReportDetailsPage>
                                     style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.green[700],
                                         foregroundColor: Colors.yellow[100]),
-                                    onPressed: widget.addressed == false ||
-                                            widget.finished == true
-                                        ? null
-                                        : () {
-                                            setState(() {
-                                              ResponderService.instance
-                                                  .finishReport(
-                                                      widget.rid.toString());
-                                            });
-                                          },
+                                    onPressed: () {
+                                      debugPrint('finished clicked');
+                                    },
                                     child: const Text('FINISHED'))),
                           ),
                           Padding(
@@ -394,36 +266,11 @@ class _ReportDetailsPageState extends State<ReportDetailsPage>
                                     style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.red[700],
                                         foregroundColor: Colors.yellow[100]),
-                                    onPressed: widget.finished == true
-                                        ? null
-                                        : () {
-                                            setState(() {
-                                              ResponderService.instance
-                                                  .cancelReport(
-                                                      widget.rid.toString());
-                                            });
-                                          },
+                                    onPressed: () {
+                                      debugPrint('finished clicked');
+                                    },
                                     child: const Text('CANCEL'))),
                           ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const SizedBox(height: 70),
-                          SizedBox(
-                              width: 200,
-                              height: 40,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.yellow[800],
-                                        foregroundColor: Colors.white),
-                                onPressed: () {
-                                  Get.to(() =>
-                                      ResponseFullMap(userLoc: widget.userLoc));
-                                },
-                                child: const Text('SHOW MAP'),
-                              )),
                         ],
                       )
                     ],

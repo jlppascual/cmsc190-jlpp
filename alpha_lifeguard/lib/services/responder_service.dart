@@ -1,10 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_state_manager/src/simple/get_controllers.dart';
-
-import '../models/reports.dart';
 import '../models/response_units.dart';
 
 class ResponderService extends GetxController {
@@ -12,11 +8,13 @@ class ResponderService extends GetxController {
 
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
-  final CollectionReference _userCollection =
-      FirebaseFirestore.instance.collection('users');
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   final CollectionReference _reportsCollection =
       FirebaseFirestore.instance.collection('user_reports');
+
+        final CollectionReference _userCollection =
+      FirebaseFirestore.instance.collection('users');
 
   final CollectionReference _responderCollection =
       FirebaseFirestore.instance.collection('response_units');
@@ -46,7 +44,27 @@ class ResponderService extends GetxController {
         .get();
   }
 
-   Stream<QuerySnapshot<Map<String, dynamic>>> getResponderReports() async* {
+  Future<dynamic> getUserReporterDetails(String uid) async{
+    var res = await _userCollection.doc(uid).get();
+    dynamic user = res.data();
+
+    // List<String> name = [
+    //   user['firstName'],
+    //   user['lastName']
+    // ];
+
+
+    return user;
+  }
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> getStreamResponderDetails() {
+    return _firebaseFirestore
+        .collection('response_units')
+        .where('uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> getResponderReports() async* {
     var res;
     await _responderCollection
         .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -54,7 +72,7 @@ class ResponderService extends GetxController {
         .then((value) async {
       res = value['type'];
     });
-    yield*  _firebaseFirestore
+    yield* _firebaseFirestore
         .collection("user_reports")
         .where('type', isEqualTo: res)
         .snapshots();
@@ -70,12 +88,102 @@ class ResponderService extends GetxController {
     //     .toList();
   }
 
-   void addressReport(String rid) async {
+  Stream<QuerySnapshot<Map<String, dynamic>>>
+      getAcknowledgedResponderReports() async* {
+    var res;
+    await _responderCollection
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get()
+        .then((value) async {
+      res = value['type'];
+    });
+    yield* _firebaseFirestore
+        .collection("user_reports")
+        .where('type', isEqualTo: res)
+        .where('addressed', isEqualTo: true)
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot<Map<String, dynamic>>>
+      getFinishedResponderReports() async* {
+    var res;
+    await _responderCollection
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get()
+        .then((value) async {
+      res = value['type'];
+    });
+    yield* _firebaseFirestore
+        .collection("user_reports")
+        .where('type', isEqualTo: res)
+        .where('finished', isEqualTo: true)
+        .snapshots();
+  }
+
+  void addressReport(String rid) async {
     try {
-      _reportsCollection.doc(rid).update({'addressed': true}).then(
-          (value) => print('successful update!'));
+      _reportsCollection.doc(rid).update({'addressed': true});
     } catch (e) {
-      print(e.toString());
+      //
+    }
+  }
+
+  void finishReport(String rid) async {
+    try {
+      _reportsCollection.doc(rid).update({'finished': true});
+    } catch (e) {
+      //
+    }
+  }
+
+  void cancelReport(String rid) async {
+    try {
+      _reportsCollection
+          .doc(rid)
+          .update({'finished': false});
+          _reportsCollection
+          .doc(rid)
+          .update({'addressed': false});
+    } catch (e) {
+      //
+    }
+  }
+
+  Future<dynamic> changeResponderPassword(
+      String currPassword, String newPassword) async {
+    DocumentSnapshot temp = await getResponderDetails();
+    dynamic user = temp.data();
+
+    if (user['password'] == currPassword) {
+      try {
+        _responderCollection
+            .doc(_auth.currentUser!.uid)
+            .update({'password': newPassword});
+        _auth.currentUser!.updatePassword(newPassword);
+        return true;
+      } catch (e) {
+        return e;
+      }
+    } else {
+      return 'incorrect password!';
+    }
+  }
+
+  Future<dynamic> changeResponderEmail(String newEmail, String password) async {
+    DocumentSnapshot temp = await getResponderDetails();
+    dynamic user = temp.data();
+
+    if (user['password'] == password) {
+      try {
+        _responderCollection
+            .doc(_auth.currentUser!.uid)
+            .update({'email': newEmail});
+        _auth.currentUser!.updateEmail(newEmail);
+      } catch (e) {
+        return e;
+      }
+    } else {
+      return 'Incorrect Password!';
     }
   }
 }

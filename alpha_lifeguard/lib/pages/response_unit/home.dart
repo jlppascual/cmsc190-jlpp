@@ -4,8 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../services/user_service.dart';
-
 class ResponseHome extends StatefulWidget {
   const ResponseHome({super.key});
 
@@ -50,12 +48,12 @@ class _ResponseHomeState extends State<ResponseHome> {
                     decoration: const BoxDecoration(
                       color: Colors.red,
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(25, 25, 25, 0),
+                    child: const Padding(
+                      padding: EdgeInsets.fromLTRB(25, 25, 25, 0),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
+                        children: [
                           Text(
                             'History',
                             style: TextStyle(
@@ -75,12 +73,12 @@ class _ResponseHomeState extends State<ResponseHome> {
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 10),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       crossAxisAlignment: CrossAxisAlignment.center,
-                      children: const [
+                      children: [
                         Text('DATE',
                             style: TextStyle(fontWeight: FontWeight.bold)),
                         Text('TYPE',
@@ -123,10 +121,13 @@ class _ResponseHomeState extends State<ResponseHome> {
                                           finished: snapshot.data!.docs[index]
                                               .get('finished'),
                                           addressed: snapshot.data!.docs[index]
-                                            .get('addressed'),
-                                            rid: snapshot.data!.docs[index]
-                                            .get('rid'),
-                                            userLoc: snapshot.data!.docs[index].get('coordinates')));
+                                              .get('addressed'),
+                                          rid: snapshot.data!.docs[index]
+                                              .get('rid'),
+                                          uid: snapshot.data!.docs[index]
+                                              .get('uid'),
+                                          userLoc: snapshot.data!.docs[index]
+                                              .get('coordinates')));
                                     },
                                     child: Row(
                                       mainAxisAlignment:
@@ -159,9 +160,7 @@ class _ResponseHomeState extends State<ResponseHome> {
                                                             .get('finished') ==
                                                         true
                                                     ? Colors.green
-                                                    : snapshot.data!.docs[index]
-                                                                .get(
-                                                                    'addressed') ==
+                                                    : snapshot.data!.docs[index].get('addressed') ==
                                                             true
                                                         ? Colors.yellow[700]
                                                         : Colors.red,
@@ -171,10 +170,14 @@ class _ResponseHomeState extends State<ResponseHome> {
                                                         .get('finished') ==
                                                     true
                                                 ? 'resolved'
+                                                    .toString()
+                                                    .toUpperCase()
                                                 : snapshot.data!.docs[index]
                                                             .get('addressed') ==
                                                         true
                                                     ? 'acknowledged'
+                                                        .toString()
+                                                        .toUpperCase()
                                                     : 'new'.toString().toUpperCase())),
                                       ],
                                     ),

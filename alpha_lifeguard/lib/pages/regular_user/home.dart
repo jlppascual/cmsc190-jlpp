@@ -57,12 +57,12 @@ class _HomeNavState extends State<HomeNav> {
           children: [
             Container(
               decoration: const BoxDecoration(color: Colors.red),
-              child: Padding(
-                  padding: const EdgeInsets.fromLTRB(25, 60, 15, 15),
+              child: const Padding(
+                  padding: EdgeInsets.fromLTRB(25, 60, 15, 15),
                   child: Row(children: [
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
+                      children: [
                         Text(
                           "File a Report",
                           style: TextStyle(
@@ -109,11 +109,11 @@ class _HomeNavState extends State<HomeNav> {
                                           Radius.circular(10)))),
                             ))),
                     const SizedBox(height: 10),
-                    Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                    const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 20),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
-                          children: const [
+                          children: [
                             Text(
                               'Type of Incident',
                               textAlign: TextAlign.start,
@@ -267,12 +267,12 @@ class _HomeNavState extends State<HomeNav> {
                         ],
                       ),
                     ),
-                    Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 15),
+                    const Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
-                          children: const [
+                          children: [
                             Text(
                               'Incidental Report (Optional)',
                               textAlign: TextAlign.start,
@@ -315,13 +315,16 @@ class _HomeNavState extends State<HomeNav> {
                               onPressed: () {
                                 _getImage();
                               },
-                              child: SizedBox(
+                              child: const SizedBox(
                                   width: 120,
-                                  child: Row(children: const [
+                                  child: Row(children: [
                                     Text('Attach Image '),
                                     Icon(Icons.image)
                                   ]))),
                         ),
+                        _imageFile == null
+                            ? const Text(' No file selected ')
+                            :  Text(_imageFile!.name)
                       ],
                     ),
                     Padding(
@@ -337,32 +340,33 @@ class _HomeNavState extends State<HomeNav> {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
                                           content: Text(
-                                              'Incident Type not selected!')));
-                                }
-                                DateTime today = DateTime.now();
-                                String date =
-                                    '${months[today.month - 1]}. ${today.day}, ${today.year}';
-                                String time =
-                                    '${(today.hour > 12 ? today.hour - 12 : today.hour)}:${(today.minute.bitLength < 2 ? "0${today.minute}" : today.minute)} ${(today.hour > 12 ? "PM" : "AM")}';
+                                              'Select an Incident Type!')));
+                                } else {
+                                  DateTime today = DateTime.now();
+                                  String date =
+                                      '${months[today.month - 1]}. ${today.day}, ${today.year}';
+                                  String time =
+                                      '${(today.hour > 12 ? today.hour - 12 : today.hour)}:${(today.minute.bitLength < 2 ? "0${today.minute}" : today.minute)} ${(today.hour > 12 ? "PM" : "AM")}';
 
-                                try {
-                                  UserServices.instance.sendReports(
-                                      selectedType,
-                                      desc.text,
-                                      date,
-                                      time,
-                                      currLocation);
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content: Text('Report sent!')));
+                                  try {
+                                    UserServices.instance.sendReports(
+                                        selectedType,
+                                        desc.text,
+                                        date,
+                                        time,
+                                        currLocation);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            content: Text('Report sent!')));
 
-                                  setState(() {
-                                    selectedType = '';
-                                    desc.clear();
-                                  });
-                                } catch (e) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text(e.toString())));
+                                    setState(() {
+                                      selectedType = '';
+                                      desc.clear();
+                                    });
+                                  } catch (e) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text(e.toString())));
+                                  }
                                 }
                               },
                               child: const Text('REPORT')),

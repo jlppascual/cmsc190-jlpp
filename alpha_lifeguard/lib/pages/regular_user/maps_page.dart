@@ -5,6 +5,7 @@ import 'package:google_maps_widget/google_maps_widget.dart';
 import '../../services/maps_service.dart';
 import '../../utils/map_constants.dart';
 
+// ignore: must_be_immutable
 class UserMapsPage extends StatefulWidget {
   UserMapsPage({super.key, required this.currLocation});
 
