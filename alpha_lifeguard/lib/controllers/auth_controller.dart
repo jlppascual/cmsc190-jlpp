@@ -10,6 +10,7 @@ class AuthController extends GetxController{
   final firstName = TextEditingController();
   final lastName = TextEditingController();
   final email = TextEditingController();
+  final name = TextEditingController();
   final role = TextEditingController();
   String type = 'medical';
 

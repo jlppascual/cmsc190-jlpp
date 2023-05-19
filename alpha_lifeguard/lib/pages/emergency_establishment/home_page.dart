@@ -159,17 +159,22 @@ class _EstablishmentHomeState extends State<EstablishmentHome> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(20, 70, 20, 0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Text(
-                'LIFEGUARD',
-                style: TextStyle(color: Colors.yellow[100]),
-              ),
-            ],
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Container(
+                decoration: BoxDecoration(color: Colors.red),
+                width: MediaQuery.of(context).size.width,
+                height: 100,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 20, top: 50),
+                  child: Text(
+                    'LIFEGUARD',
+                    style: TextStyle(
+                        color: Colors.yellow[100], fontWeight: FontWeight.bold, fontSize: 30),
+                  ),
+                ))
+          ],
         ),
         const SizedBox(height: 10),
         Expanded(
@@ -178,96 +183,130 @@ class _EstablishmentHomeState extends State<EstablishmentHome> {
               color: Colors.yellow[100],
               borderRadius: BorderRadius.circular(8)),
           child: StreamBuilder(
-              stream: EstablishmentServices.instance.getEstablishmentResponders(),
+              stream:
+                  EstablishmentServices.instance.getEstablishmentResponders(),
               builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  debugPrint('no data!');
-                  return Row(
-                    children: const [
-                      Text('there are no existing responder units yet',
-                          style: TextStyle(color: Colors.black))
-                    ],
-                  );
-                } else {
-                  return ListView.builder(
-                      itemCount: snapshot.data!.docs.length + 1,
-                      itemBuilder: (context, int index) {
-                        if (index == 0) {
-                          return Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                crossAxisAlignment: CrossAxisAlignment.center,
+                List<Widget> children;
+                if (snapshot.hasData) {
+                  children = <Widget>[
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height - 200,
+                      width: MediaQuery.of(context).size.width,
+                      child: ListView.builder(
+                          itemCount: snapshot.data!.docs.length + 1,
+                          itemBuilder: (context, int index) {
+                            if (index == 0) {
+                              return Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  const Text('NAME',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold)),
-                                  ElevatedButton(
-                                      onPressed: () {
-                                        _newRespondersModal(context);
-                                      },
-                                      child: Row(
-                                        children: const [
-                                          Text('Add Responders'),
-                                          Icon(Icons.add)
-                                        ],
-                                      ))
-                                ],
-                              ),
-                              const Divider(
-                                height: 10,
-                                thickness: 2,
-                                indent: 15,
-                                endIndent: 15,
-                                color: Colors.black45,
-                              )
-                            ],
-                          );
-                        } else {
-                          index -= 1;
-                          return Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 10),
-                                  child: Row(
+                                  Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceEvenly,
                                     crossAxisAlignment:
                                         CrossAxisAlignment.center,
                                     children: [
-                                      Container(
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  const BorderRadius.horizontal(
-                                                      left: Radius.circular(2),
-                                                      right:
-                                                          Radius.circular(2)),
-                                              color: Colors.yellow[100]),
-                                          child: Row(children: [
-                                            Text(snapshot.data!.docs[index]
-                                                .get('firstName')),
-                                                const Text(' '),
-                                            Text(snapshot.data!.docs[index]
-                                                .get('lastName'))
-                                          ]))
+                                      const Text('NAME',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold)),
+                                      ElevatedButton(
+                                          onPressed: () {
+                                            _newRespondersModal(context);
+                                          },
+                                          child: Row(
+                                            children: const [
+                                              Text('Add Responders'),
+                                              Icon(Icons.add)
+                                            ],
+                                          ))
                                     ],
-                                  )),
-                              const Divider(
-                                height: 1,
-                                thickness: 1,
-                                indent: 15,
-                                endIndent: 15,
-                                color: Colors.black45,
-                              )
-                            ],
-                          );
-                        }
-                      });
+                                  ),
+                                  const Divider(
+                                    height: 10,
+                                    thickness: 2,
+                                    indent: 15,
+                                    endIndent: 15,
+                                    color: Colors.black45,
+                                  )
+                                ],
+                              );
+                            } else {
+                              index -= 1;
+                              return Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 10),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Container(
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      const BorderRadius
+                                                              .horizontal(
+                                                          left: Radius.circular(
+                                                              2),
+                                                          right:
+                                                              Radius.circular(
+                                                                  2)),
+                                                  color: Colors.yellow[100]),
+                                              child: Row(children: [
+                                                Text(snapshot.data!.docs[index]
+                                                    .get('firstName')),
+                                                const Text(' '),
+                                                Text(snapshot.data!.docs[index]
+                                                    .get('lastName'))
+                                              ]))
+                                        ],
+                                      )),
+                                  const Divider(
+                                    height: 1,
+                                    thickness: 1,
+                                    indent: 15,
+                                    endIndent: 15,
+                                    color: Colors.black45,
+                                  )
+                                ],
+                              );
+                            }
+                          }),
+                    )
+                  ];
+                } else if (snapshot.hasError) {
+                  children = <Widget>[
+                    const Icon(
+                      Icons.error_outline,
+                      color: Colors.red,
+                      size: 60,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16),
+                      child: Text('Error: ${snapshot.error}'),
+                    ),
+                  ];
+                } else {
+                  children = const <Widget>[
+                    SizedBox(
+                      width: 60,
+                      height: 60,
+                      child: CircularProgressIndicator(),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top: 15),
+                      child: Text('Awaiting result...'),
+                    ),
+                  ];
                 }
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: children,
+                  ),
+                );
               }),
         )),
       ],

@@ -27,7 +27,7 @@ class UserServices extends GetxController {
     }
   }
 
-  Future sendReports(String type, String desc, String date, String time,
+  Future sendReports(String type, String desc, String imagePath, String downloadUrl, String date, String time,
       Map<String, dynamic> coordinates) async {
     var ridGenerator = const Uuid(); //creates unique ids
 
@@ -44,6 +44,8 @@ class UserServices extends GetxController {
         rid: rid,
         desc: desc,
         type: type,
+        storagePath: imagePath,
+        downloadUrl: downloadUrl,
         date: date,
         time: time,
         coordinates: coordinates,

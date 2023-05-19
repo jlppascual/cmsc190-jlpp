@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:encryptor/encryptor.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import '../models/response_units.dart';
@@ -9,11 +10,13 @@ class ResponderService extends GetxController {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  //password key to encrypt.decrypt
+  var key = '';
 
   final CollectionReference _reportsCollection =
       FirebaseFirestore.instance.collection('user_reports');
 
-        final CollectionReference _userCollection =
+  final CollectionReference _userCollection =
       FirebaseFirestore.instance.collection('users');
 
   final CollectionReference _responderCollection =
@@ -44,16 +47,9 @@ class ResponderService extends GetxController {
         .get();
   }
 
-  Future<dynamic> getUserReporterDetails(String uid) async{
+  Future<dynamic> getUserReporterDetails(String uid) async {
     var res = await _userCollection.doc(uid).get();
     dynamic user = res.data();
-
-    // List<String> name = [
-    //   user['firstName'],
-    //   user['lastName']
-    // ];
-
-
     return user;
   }
 
@@ -138,12 +134,8 @@ class ResponderService extends GetxController {
 
   void cancelReport(String rid) async {
     try {
-      _reportsCollection
-          .doc(rid)
-          .update({'finished': false});
-          _reportsCollection
-          .doc(rid)
-          .update({'addressed': false});
+      _reportsCollection.doc(rid).update({'finished': false});
+      _reportsCollection.doc(rid).update({'addressed': false});
     } catch (e) {
       //
     }
@@ -154,12 +146,15 @@ class ResponderService extends GetxController {
     DocumentSnapshot temp = await getResponderDetails();
     dynamic user = temp.data();
 
-    if (user['password'] == currPassword) {
+    var decryptedPassword = Encryptor.decrypt(key, user['password']);
+    var encryptedPassword = Encryptor.encrypt(key, newPassword);
+
+    if (decryptedPassword == currPassword) {
       try {
         _responderCollection
             .doc(_auth.currentUser!.uid)
-            .update({'password': newPassword});
-        _auth.currentUser!.updatePassword(newPassword);
+            .update({'password': encryptedPassword});
+        _auth.currentUser!.updatePassword(encryptedPassword);
         return true;
       } catch (e) {
         return e;
@@ -173,7 +168,9 @@ class ResponderService extends GetxController {
     DocumentSnapshot temp = await getResponderDetails();
     dynamic user = temp.data();
 
-    if (user['password'] == password) {
+    var decryptedPassword = Encryptor.decrypt(key, user['password']);
+
+    if (decryptedPassword == password) {
       try {
         _responderCollection
             .doc(_auth.currentUser!.uid)

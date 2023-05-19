@@ -26,7 +26,7 @@ class _EstablishmentMainState extends State<EstablishmentMain> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.red[600],
+        backgroundColor: Colors.yellow[100],
         bottomNavigationBar: BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
             backgroundColor: Colors.yellow[100],

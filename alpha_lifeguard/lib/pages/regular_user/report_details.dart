@@ -6,15 +6,17 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 // ignore: must_be_immutable
 class UserReportDetailsPage extends StatefulWidget {
-  UserReportDetailsPage(
-      {super.key,
-      required this.desc,
-      required this.time,
-      required this.finished,
-      required this.addressed,
-      required this.date,
-      required this.rid,
-      required this.userLoc});
+  UserReportDetailsPage({
+    super.key,
+    required this.desc,
+    required this.time,
+    required this.finished,
+    required this.addressed,
+    required this.date,
+    required this.rid,
+    required this.userLoc,
+    required this.downloadUrl,
+  });
 
   final dynamic desc;
   final dynamic date;
@@ -23,6 +25,7 @@ class UserReportDetailsPage extends StatefulWidget {
   dynamic addressed;
   final dynamic rid;
   final Map<String, dynamic> userLoc;
+  final String downloadUrl;
 
   @override
   State<UserReportDetailsPage> createState() => _UserReportDetailsPageState();
@@ -34,11 +37,11 @@ class _UserReportDetailsPageState extends State<UserReportDetailsPage>
   late CameraPosition _googleCamPos;
 
   final List<Marker> markers = <Marker>[];
-
   List<LatLng> polyLineCoordinates = [];
 
-  Position? currentLocation;
+  var ref;
 
+  Position? currentLocation;
   @override
   void initState() {
     // TODO: implement setState
@@ -59,6 +62,7 @@ class _UserReportDetailsPageState extends State<UserReportDetailsPage>
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('WIDGET IS HERE: ' + widget.downloadUrl);
     return DefaultTabController(
         length: 2,
         child: Builder(builder: (BuildContext context) {
@@ -77,13 +81,15 @@ class _UserReportDetailsPageState extends State<UserReportDetailsPage>
                 children: [
                   ListView(
                     children: <Widget>[
-                      const Center(
+                      Center(
                           child: SizedBox(
                               width: 250,
                               height: 250,
                               child: Image(
-                                  image: NetworkImage(
-                                      'https://i.pinimg.com/originals/09/b3/34/09b334fd23b9be6a472a2f3eada61759.jpg')))),
+                                  image: widget.downloadUrl == ''
+                                      ? const NetworkImage(
+                                          'https://firebasestorage.googleapis.com/v0/b/cmsc190-lifeguard.appspot.com/o/reports%2Fdefault.jpg?alt=media&token=ffe3854a-12c1-47a8-bc4d-d9b9e6355c94')
+                                      : NetworkImage(widget.downloadUrl)))),
                       const Padding(
                         padding: EdgeInsets.only(left: 15),
                         child: Text(
@@ -183,7 +189,7 @@ class _UserReportDetailsPageState extends State<UserReportDetailsPage>
                                       'https://i.pinimg.com/originals/09/b3/34/09b334fd23b9be6a472a2f3eada61759.jpg')))),
                       const Row(
                         mainAxisAlignment: MainAxisAlignment.start,
-                        children:  [
+                        children: [
                           Padding(
                             padding: EdgeInsets.only(left: 15),
                             child: Text(
@@ -202,7 +208,7 @@ class _UserReportDetailsPageState extends State<UserReportDetailsPage>
                       ),
                       const Row(
                         mainAxisAlignment: MainAxisAlignment.start,
-                        children:  [
+                        children: [
                           Padding(
                             padding: EdgeInsets.only(left: 15, top: 15),
                             child: Text(

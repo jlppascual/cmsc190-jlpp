@@ -13,6 +13,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:encryptor/encryptor.dart';
 
 import '../controllers/auth_controller.dart';
 import '../models/establishment.dart';
@@ -40,6 +41,9 @@ class UserAuthService extends GetxController {
   String? _tempUid;
   String get tempUid => _tempUid!;
 
+  //password key to encrypt.decrypt
+  var key = '';
+
   final CollectionReference _userCollection =
       FirebaseFirestore.instance.collection('users');
 
@@ -57,8 +61,6 @@ class UserAuthService extends GetxController {
   }
 
   _setInitialScreen(User? user) async {
-    
-
     final SharedPreferences s = await SharedPreferences.getInstance();
 
     if (user != null) {
@@ -114,12 +116,8 @@ class UserAuthService extends GetxController {
         },
         verificationFailed: (FirebaseAuthException e) {
           if (e.code == 'invalid-phone-number') {
-            debugPrint('Error The provided number is not valid!');
-
             Get.snackbar('Error', 'The provided number is not valid!');
           } else {
-            debugPrint('Error: ${e.code}');
-
             Get.snackbar('Error', e.code);
           }
         },
@@ -167,7 +165,7 @@ class UserAuthService extends GetxController {
           .showSnackBar(SnackBar(content: Text(e.toString())));
       _isLoading = false;
     }
-    
+
     try {
       var credentials = await _auth.signInWithCredential(
           PhoneAuthProvider.credential(
@@ -185,10 +183,8 @@ class UserAuthService extends GetxController {
         await _firebaseFirestore.collection("users").doc(_uid).get();
 
     if (snapshot.exists) {
-      debugPrint("User exist");
       return true;
     } else {
-      debugPrint("New User");
       return false;
     }
   }
@@ -227,20 +223,24 @@ class UserAuthService extends GetxController {
     SharedPreferences s = await SharedPreferences.getInstance();
     await s.setString('type', 'establishment');
 
+    var encryptedPassword = Encryptor.encrypt(key, password);
+
     try {
       await _auth.createUserWithEmailAndPassword(
-          email: email, password: password);
+          email: email, password: encryptedPassword);
       _uid = _auth.currentUser?.uid;
 
       var estab = Establishment(
-          uid: uid, email: email, password: password, role: role, type: type);
+          uid: uid,
+          email: email,
+          password: encryptedPassword,
+          role: role,
+          type: type);
       await EstablishmentServices.instance.createEstablishment(estab);
       return true;
     } on FirebaseAuthException catch (e) {
-      debugPrint("ERROR: ${e.code}");
       return ("ERROR: ${e.code}");
     } catch (err) {
-      debugPrint("ERROR: ${err.toString()}");
       return ("ERROR: ${err.toString()}");
     }
   }
@@ -250,8 +250,11 @@ class UserAuthService extends GetxController {
     SharedPreferences s = await SharedPreferences.getInstance();
     await s.setString('type', 'establishment');
 
+    var encryptedPassword = Encryptor.encrypt(key, password);
+
     try {
-      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      await _auth.signInWithEmailAndPassword(
+          email: email, password: encryptedPassword);
       User? user = _auth.currentUser;
       _uid = user?.uid;
       return user != null ? true : false;
@@ -267,9 +270,11 @@ class UserAuthService extends GetxController {
     FirebaseApp app = await Firebase.initializeApp(
         name: 'secondary', options: Firebase.app().options);
 
+    var encryptedPassword = Encryptor.encrypt(key, password);
+
     try {
-      await FirebaseAuth.instanceFor(app: app)
-          .createUserWithEmailAndPassword(email: email, password: password);
+      await FirebaseAuth.instanceFor(app: app).createUserWithEmailAndPassword(
+          email: email, password: encryptedPassword);
       _tempUid = FirebaseAuth.instanceFor(app: app).currentUser?.uid;
       _uid = _auth.currentUser?.uid;
 
@@ -287,10 +292,8 @@ class UserAuthService extends GetxController {
       app.delete();
       return true;
     } on FirebaseAuthException catch (e) {
-      debugPrint("ERROR: ${e.code}");
       return ("ERROR: ${e.code}");
     } catch (err) {
-      debugPrint("ERROR: ${err.toString()}");
       return ("ERROR: ${err.toString()}");
     }
   }
@@ -300,8 +303,11 @@ class UserAuthService extends GetxController {
     SharedPreferences s = await SharedPreferences.getInstance();
     await s.setString('type', 'responder');
 
+    var encryptedPassword = Encryptor.encrypt(key, password);
+
     try {
-      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      await _auth.signInWithEmailAndPassword(
+          email: email, password: encryptedPassword);
       User? user = _auth.currentUser;
       _uid = user?.uid;
 
@@ -318,6 +324,17 @@ class UserAuthService extends GetxController {
       _responderCollection.doc(_uid).update({
         'firstName': _controller.firstName.text.trim(),
         'lastName': _controller.lastName.text.trim()
+      });
+      return true;
+    } catch (e) {
+      return ('ERROR: $e');
+    }
+  }
+
+    Future<dynamic> updateEstablishmentName() async {
+    try {
+      _userCollection.doc(_uid).update({
+        'name': _controller.name.text.trim(),
       });
       return true;
     } catch (e) {

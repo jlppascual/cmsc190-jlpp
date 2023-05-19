@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:alpha_lifeguard/utils/map_constants.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:get/get.dart';
@@ -14,6 +17,9 @@ class HomeNav extends StatefulWidget {
 
 class _HomeNavState extends State<HomeNav> {
   final ImagePicker _picker = ImagePicker();
+  double? progress;
+  String imageUrl = '';
+  String imagePath = '';
   XFile? _imageFile;
 
   double contWidth = 100;
@@ -37,6 +43,27 @@ class _HomeNavState extends State<HomeNav> {
     'Nov',
     'Dec'
   ];
+
+  UploadTask? uploadTask;
+
+  Future uploadReportImage() async {
+    final path = 'reports/${_imageFile!.name}';
+    final file = File(_imageFile!.path);
+
+    final ref = FirebaseStorage.instance.ref().child(path);
+    setState(() {
+      uploadTask = ref.putFile(file);
+    });
+
+    final snapshot = await uploadTask!.whenComplete(() {});
+
+    final urlDownload = await snapshot.ref.getDownloadURL();
+
+    setState(() {
+      imageUrl = urlDownload;
+      imagePath = path;
+    });
+  }
 
   _getImage() async {
     XFile? selectedFile = await _picker.pickImage(
@@ -324,11 +351,26 @@ class _HomeNavState extends State<HomeNav> {
                         ),
                         _imageFile == null
                             ? const Text(' No file selected ')
-                            :  Text(_imageFile!.name)
+                            : Text(_imageFile!.name)
                       ],
                     ),
+                    buildProgress(),
                     Padding(
                         padding: const EdgeInsets.only(top: 20),
+                        child: SizedBox(
+                          width: 150,
+                          height: 40,
+                          child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.yellow[700]),
+                              onPressed: () {
+                                uploadReportImage();
+                                debugPrint('pressed');
+                              },
+                              child: const Text('UPLOAD IMAGE')),
+                        )),
+                    Padding(
+                        padding: const EdgeInsets.only(top: 15),
                         child: SizedBox(
                           width: 150,
                           height: 40,
@@ -349,9 +391,14 @@ class _HomeNavState extends State<HomeNav> {
                                       '${(today.hour > 12 ? today.hour - 12 : today.hour)}:${(today.minute.bitLength < 2 ? "0${today.minute}" : today.minute)} ${(today.hour > 12 ? "PM" : "AM")}';
 
                                   try {
+                                    Future.delayed(Duration.zero, () async {
+                                      buildProgress();
+                                    });
                                     UserServices.instance.sendReports(
                                         selectedType,
                                         desc.text,
+                                        imagePath,
+                                        imageUrl,
                                         date,
                                         time,
                                         currLocation);
@@ -376,4 +423,27 @@ class _HomeNavState extends State<HomeNav> {
           ],
         )));
   }
+
+  Widget buildProgress() => StreamBuilder<TaskSnapshot>(
+      stream: uploadTask?.snapshotEvents,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          final data = snapshot.data!;
+          double progress = data.bytesTransferred / data.totalBytes;
+
+          return SizedBox(
+              height: 30,
+              child: Stack(fit: StackFit.expand, children: [
+                LinearProgressIndicator(
+                    value: progress,
+                    backgroundColor: Colors.grey,
+                    color: Colors.green[700]),
+                Center(
+                    child: Text('${100 * progress.roundToDouble()}%',
+                        style: const TextStyle(color: Colors.white)))
+              ]));
+        } else {
+          return const SizedBox(height: 30);
+        }
+      });
 }

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:encryptor/encryptor.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 
@@ -13,6 +14,10 @@ class EstablishmentServices extends GetxController {
   final CollectionReference _userCollection =
       FirebaseFirestore.instance.collection('users');
 
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  //password key to encrypt.decrypt
+  var key = '';
+
   Future createEstablishment(Establishment user) async {
     try {
       return await _userCollection.doc(user.uid).set(user.toJson());
@@ -26,5 +31,62 @@ class EstablishmentServices extends GetxController {
         .collection("response_units")
         .where('rsid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
         .snapshots();
+  }
+
+  Future<DocumentSnapshot> getEstablishmentDetails() async {
+    return await _userCollection
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get();
+  }
+
+  Future<dynamic> changeEstablishmentEmail(
+      String newEmail, String password) async {
+    DocumentSnapshot temp = await getEstablishmentDetails();
+    dynamic user = temp.data();
+
+    var decryptedPassword = Encryptor.decrypt(key, user['password']);
+
+    if (decryptedPassword == password) {
+      try {
+        _userCollection.doc(_auth.currentUser!.uid).update({'email': newEmail});
+        _auth.currentUser!.updateEmail(newEmail);
+        return true;
+      } catch (e) {
+        return e;
+      }
+    } else {
+      return 'Incorrect Password!';
+    }
+  }
+
+    Stream<QuerySnapshot<Map<String, dynamic>>> getStreamEstablishmentDetails() {
+    return _firebaseFirestore
+        .collection('users')
+        .where('uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .snapshots();
+  }
+
+  
+  Future<dynamic> changeEstablishmentPassword(
+      String currPassword, String newPassword) async {
+    DocumentSnapshot temp = await getEstablishmentDetails();
+    dynamic user = temp.data();
+
+    var decryptedPassword = Encryptor.decrypt(key, user['password']);
+    var encryptedPassword = Encryptor.encrypt(key, newPassword);
+
+    if (decryptedPassword == currPassword) {
+      try {
+        _userCollection
+            .doc(_auth.currentUser!.uid)
+            .update({'password': encryptedPassword});
+        _auth.currentUser!.updatePassword(newPassword);
+        return true;
+      } catch (e) {
+        return e;
+      }
+    } else {
+      return 'incorrect password!';
+    }
   }
 }

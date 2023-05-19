@@ -228,6 +228,7 @@ class _EstablishmentRegister extends State<EstablishmentRegister>
                                         const SnackBar(
                                             content: Text(
                                                 'Successfully registered!')));
+                                    dispose();
 
                                     Get.to(() => const EstablishmentMain());
                                   } else {
