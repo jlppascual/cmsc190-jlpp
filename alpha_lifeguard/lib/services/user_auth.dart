@@ -3,6 +3,7 @@ import 'package:alpha_lifeguard/pages/emergency_establishment/main_home.dart';
 import 'package:alpha_lifeguard/pages/regular_user/user_info.dart';
 import 'package:alpha_lifeguard/pages/regular_user/main_home.dart';
 import 'package:alpha_lifeguard/pages/response_unit/main_navigation.dart';
+import 'package:alpha_lifeguard/pages/shared/verify_email.dart';
 import 'package:alpha_lifeguard/pages/shared/welcome_screen.dart';
 import 'package:alpha_lifeguard/services/establishment_services.dart';
 import 'package:alpha_lifeguard/services/responder_service.dart';
@@ -85,9 +86,15 @@ class UserAuthService extends GetxController {
                 ? Get.offAll(() => const UserMain())
                 : Get.offAll(() => const UserInfoPage())
             : s.getString("type") == 'establishment'
-                ? Get.offAll(() => const EstablishmentMain())
+                ? _auth.currentUser!.emailVerified == true
+                    ? Get.offAll(() => const EstablishmentMain())
+                    : Get.offAll(() => EmailVerificationScreen(
+                        email: _auth.currentUser!.email))
                 : s.getString("type") == 'responder'
-                    ? Get.offAll(() => const ResponseNav())
+                    ? _auth.currentUser!.emailVerified == true
+                        ? Get.offAll(() => const ResponseNav())
+                        : Get.offAll(() => EmailVerificationScreen(
+                            email: _auth.currentUser!.email))
                     : {
                         //do nothing
                       };
@@ -158,10 +165,10 @@ class UserAuthService extends GetxController {
       prefs.setString('type', 'user');
     } on FirebaseAuthException catch (e) {
       Get.snackbar('ERROR: ', '$e');
-      
+
       _isLoading = false;
     } catch (e) {
-            Get.snackbar('ERROR: ', '$e');
+      Get.snackbar('ERROR: ', '$e');
       _isLoading = false;
     }
 
@@ -236,11 +243,32 @@ class UserAuthService extends GetxController {
           role: role,
           type: type);
       await EstablishmentServices.instance.createEstablishment(estab);
+      await sendEmailVerification();
       return true;
     } on FirebaseAuthException catch (e) {
       return ("ERROR: ${e.code}");
     } catch (err) {
       return ("ERROR: ${err.toString()}");
+    }
+  }
+
+  // EMAIL VERIFICATION
+  Future<void> sendEmailVerification() async {
+    try {
+      _auth.currentUser!.sendEmailVerification();
+      Get.snackbar('SUCCESS: ', 'Email verification sent!');
+    } on FirebaseAuthException catch (e) {
+      Get.snackbar('ERROR: ', e.message!); // Display error message
+    }
+  }
+
+  // EMAIL VERIFICATION
+  Future<void> sendResponderVerification(User? user) async {
+    try {
+      user!.sendEmailVerification();
+      Get.snackbar('SUCCESS: ', 'Email verification sent!');
+    } on FirebaseAuthException catch (e) {
+      Get.snackbar('ERROR: ', e.message!); // Display error message
     }
   }
 
@@ -256,6 +284,7 @@ class UserAuthService extends GetxController {
           email: email, password: encryptedPassword);
       User? user = _auth.currentUser;
       _uid = user?.uid;
+
       return user != null ? true : false;
     } on FirebaseAuthException catch (e) {
       return e.code;
@@ -277,7 +306,8 @@ class UserAuthService extends GetxController {
       _tempUid = FirebaseAuth.instanceFor(app: app).currentUser?.uid;
       _uid = _auth.currentUser?.uid;
 
-      var estab = await _firebaseFirestore.collection('establishments').doc(uid).get();
+      var estab =
+          await _firebaseFirestore.collection('establishments').doc(uid).get();
 
       var unit = ResponseUnit(
           uid: tempUid,
@@ -288,6 +318,8 @@ class UserAuthService extends GetxController {
           type: estab['type'],
           password: encryptedPassword);
       await ResponderService.instance.createResponder(unit);
+      await sendResponderVerification(
+          FirebaseAuth.instanceFor(app: app).currentUser);
       app.delete();
       return true;
     } on FirebaseAuthException catch (e) {
@@ -330,7 +362,7 @@ class UserAuthService extends GetxController {
     }
   }
 
-    Future<dynamic> updateEstablishmentName() async {
+  Future<dynamic> updateEstablishmentName() async {
     try {
       print(_controller.name.text.trim());
       _userCollection.doc(_uid).update({
@@ -340,5 +372,9 @@ class UserAuthService extends GetxController {
     } catch (e) {
       return ('ERROR: $e');
     }
+  }
+
+  String getCurrentUser() {
+    return _auth.currentUser!.uid;
   }
 }

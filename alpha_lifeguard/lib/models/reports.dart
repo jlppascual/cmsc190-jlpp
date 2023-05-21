@@ -10,6 +10,7 @@ class Report {
   bool finished;
   bool addressed;
   String desc;
+  String addressedBy;
 
   Report(
       {required this.uid,
@@ -22,7 +23,8 @@ class Report {
       required this.downloadUrl,
       required this.date,
       required this.time,
-      required this.coordinates});
+      required this.coordinates,
+      this.addressedBy = ''});
 
   Report.fromData(Map<String, dynamic> data)
       : uid = data['uid'],
@@ -35,7 +37,8 @@ class Report {
         downloadUrl = data['downloadUrl'],
         date = data['date'],
         time = data['time'],
-        coordinates = data['coordinates'];
+        coordinates = data['coordinates'],
+        addressedBy = data['addressedBy'];
 
   Map<String, dynamic> toJson() {
     return {
@@ -50,6 +53,7 @@ class Report {
       'coordinates': coordinates,
       'addressed': addressed,
       'finished': finished,
+      'addressedBy':addressedBy
     };
   }
 }

@@ -53,7 +53,6 @@ class ResponderService extends GetxController {
     return user;
   }
 
-
   Stream<QuerySnapshot<Map<String, dynamic>>> getStreamResponderDetails() {
     return _firebaseFirestore
         .collection('response_units')
@@ -73,16 +72,6 @@ class ResponderService extends GetxController {
         .collection("user_reports")
         .where('type', isEqualTo: res)
         .snapshots();
-
-    // return data.docs
-    //     .map((doc) => Report(
-    //         uid: doc['uid'],
-    //         rid: doc['rid'],
-    //         coordinates: doc['coordinates'],
-    //         type: doc['type'],
-    //         date: doc['date'],
-    //         time: doc['time']))
-    //     .toList();
   }
 
   Stream<QuerySnapshot<Map<String, dynamic>>>
@@ -98,10 +87,11 @@ class ResponderService extends GetxController {
         .collection("user_reports")
         .where('type', isEqualTo: res)
         .where('addressed', isEqualTo: true)
+        .where('addressedBy', isEqualTo: _auth.currentUser!.uid)
         .snapshots();
   }
 
-    Future<dynamic> updateProfilePicture(String urlImage) async {
+  Future<dynamic> updateProfilePicture(String urlImage) async {
     try {
       _responderCollection
           .doc(_auth.currentUser!.uid)
@@ -129,8 +119,13 @@ class ResponderService extends GetxController {
   }
 
   void addressReport(String rid) async {
+    var temp = await getResponderDetails();
+    dynamic user = temp.data();
+
     try {
-      _reportsCollection.doc(rid).update({'addressed': true});
+      _reportsCollection
+          .doc(rid)
+          .update({'addressed': true, 'addressedBy': user['uid']});
     } catch (e) {
       //
     }

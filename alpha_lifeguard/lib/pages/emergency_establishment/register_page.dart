@@ -140,8 +140,7 @@ class _EstablishmentRegister extends State<EstablishmentRegister>
                                             suffixIcon: IconButton(
                                               color: Colors.white,
                                               icon: isObscured == true
-                                                  ? Icon(Icons
-                                                      .visibility_off)
+                                                  ? Icon(Icons.visibility_off)
                                                   : Icon(Icons.visibility),
                                               onPressed: () {
                                                 setState(() {
@@ -235,9 +234,6 @@ class _EstablishmentRegister extends State<EstablishmentRegister>
                                     controller.password.clear();
                                   } else {
                                     Get.snackbar('ERROR', '$res!');
-
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text(res as String)));
                                   }
                                 } else {
                                   Get.snackbar('ERROR',

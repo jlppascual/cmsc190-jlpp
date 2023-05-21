@@ -128,7 +128,8 @@ class _ResponseHomeState extends State<ResponseHome> {
                                           downloadUrl: snapshot.data!.docs[index]
                                               .get('downloadUrl'),
                                           userLoc:
-                                              snapshot.data!.docs[index].get('coordinates')));
+                                              snapshot.data!.docs[index].get('coordinates'),
+                                          addressedBy:snapshot.data!.docs[index].get('addressedBy') ,));
                                     },
                                     child: Row(
                                       mainAxisAlignment:

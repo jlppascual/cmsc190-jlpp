@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:alpha_lifeguard/pages/response_unit/full_map.dart';
+import 'package:alpha_lifeguard/services/user_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
@@ -23,7 +25,8 @@ class ReportDetailsPage extends StatefulWidget {
       required this.rid,
       required this.uid,
       required this.downloadUrl,
-      required this.userLoc});
+      required this.userLoc,
+      required this.addressedBy});
 
   final dynamic desc;
   final dynamic date;
@@ -34,6 +37,7 @@ class ReportDetailsPage extends StatefulWidget {
   final dynamic rid;
   final String downloadUrl;
   final Map<String, dynamic> userLoc;
+  final String addressedBy;
 
   @override
   State<ReportDetailsPage> createState() => _ReportDetailsPageState();
@@ -102,9 +106,11 @@ class _ReportDetailsPageState extends State<ReportDetailsPage>
 
     getCurrentLocation();
     if (widget.finished == true || widget.addressed == true) {
-      setState(() {
-        _isDisabled[1] = false;
-      });
+      if (widget.addressedBy == UserAuthService.instance.getCurrentUser()) {
+        setState(() {
+          _isDisabled[1] = false;
+        });
+      }
     }
 
     markers.add(Marker(
@@ -190,7 +196,8 @@ class _ReportDetailsPageState extends State<ReportDetailsPage>
                                         Object exception, _) {
                                       return Center(
                                         child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
                                           children: [
                                             const Text('image cannot load'),
                                             Icon(Icons.error_outline_sharp)
@@ -339,8 +346,8 @@ class _ReportDetailsPageState extends State<ReportDetailsPage>
                                   style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.green[700],
                                       foregroundColor: Colors.yellow[100]),
-                                  onPressed: widget.addressed == false ||
-                                          widget.finished == true
+                                  onPressed: (widget.addressed == false ||
+                                          widget.finished == true)
                                       ? null
                                       : () {
                                           setState(() {
@@ -413,8 +420,8 @@ class _ReportDetailsPageState extends State<ReportDetailsPage>
                                     style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.green[700],
                                         foregroundColor: Colors.yellow[100]),
-                                    onPressed: widget.addressed == false ||
-                                            widget.finished == true
+                                    onPressed: (widget.addressed == false ||
+                                            widget.finished == true)
                                         ? null
                                         : () {
                                             setState(() {

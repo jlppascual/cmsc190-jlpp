@@ -119,7 +119,8 @@ class _ResponseUnitHistoryState extends State<ResponseUnitHistory> {
                                             downloadUrl: snapshot.data!.docs[index]
                                               .get('downloadUrl'),
                                             userLoc: snapshot.data!.docs[index]
-                                                .get('coordinates')));
+                                                .get('coordinates'),
+                                            addressedBy: snapshot.data!.docs[index].get('addressedBy'),));
                                       },
                                       child: Column(
                                         mainAxisAlignment:

@@ -125,6 +125,8 @@ _newRespondersModal(context) {
                         ],
                       ),
                       const SizedBox(height: 20),
+                      const Text('Default Password: LifeGuard!2023'),
+                      const SizedBox(height: 20),
                       ElevatedButton(
                           style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.red[700],

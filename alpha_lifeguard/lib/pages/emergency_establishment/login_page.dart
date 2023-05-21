@@ -13,7 +13,7 @@ class EstablishmentLogin extends StatefulWidget {
 class _EstablishmentLoginState extends State<EstablishmentLogin> {
   final _formKey = GlobalKey<FormState>();
   final controller = Get.put(AuthController());
-  
+
   bool isObscured = false;
 
   @override
@@ -121,18 +121,18 @@ class _EstablishmentLoginState extends State<EstablishmentLogin> {
                                               return null;
                                             },
                                             decoration: InputDecoration(
-                                              suffixIcon: IconButton(
-                                              color: Colors.white,
-                                              icon: isObscured == true
-                                                  ? Icon(Icons
-                                                      .visibility_off)
-                                                  : Icon(Icons.visibility),
-                                              onPressed: () {
-                                                setState(() {
-                                                  isObscured = !isObscured;
-                                                });
-                                              },
-                                            ),
+                                                suffixIcon: IconButton(
+                                                  color: Colors.white,
+                                                  icon: isObscured == true
+                                                      ? Icon(
+                                                          Icons.visibility_off)
+                                                      : Icon(Icons.visibility),
+                                                  onPressed: () {
+                                                    setState(() {
+                                                      isObscured = !isObscured;
+                                                    });
+                                                  },
+                                                ),
                                                 enabledBorder:
                                                     const UnderlineInputBorder(
                                                   borderSide: BorderSide(
@@ -173,8 +173,6 @@ class _EstablishmentLoginState extends State<EstablishmentLogin> {
                                                 if (res == true) {
                                                   Get.snackbar('SUCCESS: ',
                                                       'Successfully logged in');
-                                                  controller.email.clear();
-                                                  controller.password.clear();
 
                                                   controller.email.clear();
                                                   controller.password.clear();
