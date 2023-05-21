@@ -81,8 +81,7 @@ class _OtpScreenState extends State<OtpScreen> {
               child: ElevatedButton(
                   onPressed: () {
                     if (_pinPutController.text.length < 6) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                          content: Text('Please enter a 6-digit code!')));
+                      Get.snackbar('WARNING: ', 'Please enter a 6-digit code!');
                     } else {
                       OtpController.instance.verifyOTP(
                           context,

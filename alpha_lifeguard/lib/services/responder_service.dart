@@ -53,6 +53,7 @@ class ResponderService extends GetxController {
     return user;
   }
 
+
   Stream<QuerySnapshot<Map<String, dynamic>>> getStreamResponderDetails() {
     return _firebaseFirestore
         .collection('response_units')
@@ -98,6 +99,17 @@ class ResponderService extends GetxController {
         .where('type', isEqualTo: res)
         .where('addressed', isEqualTo: true)
         .snapshots();
+  }
+
+    Future<dynamic> updateProfilePicture(String urlImage) async {
+    try {
+      _responderCollection
+          .doc(_auth.currentUser!.uid)
+          .update({'imageUrl': urlImage});
+      return true;
+    } catch (e) {
+      return ('ERROR: $e');
+    }
   }
 
   Stream<QuerySnapshot<Map<String, dynamic>>>

@@ -1,5 +1,4 @@
 import 'package:alpha_lifeguard/controllers/responder_login.dart';
-import 'package:alpha_lifeguard/pages/response_unit/main_navigation.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
@@ -13,6 +12,7 @@ class ResponseLogin extends StatefulWidget {
 class _ResponseLoginState extends State<ResponseLogin> {
   final controller = Get.put(ResponderLoginController());
   final _formKey = GlobalKey<FormState>();
+  bool isObscured = true;
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +80,7 @@ class _ResponseLoginState extends State<ResponseLogin> {
                                                 }
                                                 return null;
                                               },
-                                              decoration:  InputDecoration(
+                                              decoration: InputDecoration(
                                                   enabledBorder:
                                                       const UnderlineInputBorder(
                                                     borderSide: BorderSide(
@@ -95,7 +95,8 @@ class _ResponseLoginState extends State<ResponseLogin> {
                                                   labelStyle: const TextStyle(
                                                       color: Colors.white),
                                                   errorStyle: TextStyle(
-                                                      color: Colors.yellow[100])),
+                                                      color:
+                                                          Colors.yellow[100])),
                                               style: const TextStyle(
                                                   color: Colors.white),
                                             )),
@@ -113,6 +114,7 @@ class _ResponseLoginState extends State<ResponseLogin> {
                                         SizedBox(
                                             width: 200,
                                             child: TextFormField(
+                                              obscureText: isObscured,
                                               controller: controller.password,
                                               validator: (val) {
                                                 if (val == null ||
@@ -121,7 +123,21 @@ class _ResponseLoginState extends State<ResponseLogin> {
                                                 }
                                                 return null;
                                               },
-                                              decoration:  InputDecoration(
+                                              decoration: InputDecoration(
+                                                  suffixIcon: IconButton(
+                                                    color: Colors.white,
+                                                    icon: isObscured == true
+                                                        ? Icon(Icons
+                                                            .visibility_off)
+                                                        : Icon(Icons
+                                                            .visibility),
+                                                    onPressed: () {
+                                                      setState(() {
+                                                        isObscured =
+                                                            !isObscured;
+                                                      });
+                                                    },
+                                                  ),
                                                   enabledBorder:
                                                       const UnderlineInputBorder(
                                                     borderSide: BorderSide(
@@ -136,9 +152,10 @@ class _ResponseLoginState extends State<ResponseLogin> {
                                                   labelStyle: const TextStyle(
                                                       color: Colors.white),
                                                   errorStyle: TextStyle(
-                                                      color: Colors.yellow[100])),
+                                                      color:
+                                                          Colors.yellow[100])),
                                               style: const TextStyle(
-                                                  color: Colors.black),
+                                                  color: Colors.white),
                                             ))
                                       ],
                                     ),
@@ -162,29 +179,18 @@ class _ResponseLoginState extends State<ResponseLogin> {
                                                                 .password.text
                                                                 .trim());
                                                     if (res == true) {
-                                                      ScaffoldMessenger.of(
-                                                              context)
-                                                          .showSnackBar(
-                                                              const SnackBar(
-                                                                  content: Text(
-                                                                      'Successfully logged in!')));
-
-                                                      Get.to(() =>
-                                                          const ResponseNav());
+                                                      Get.snackbar('SUCCESS',
+                                                          'Successfully logged in!');
+                                                      controller.password
+                                                          .clear();
+                                                      controller.email.clear();
                                                     } else {
-                                                      ScaffoldMessenger.of(
-                                                              context)
-                                                          .showSnackBar(SnackBar(
-                                                              content: Text(res
-                                                                  as String)));
+                                                      Get.snackbar(
+                                                          'ERROR:', '$res');
                                                     }
                                                   } else {
-                                                    ScaffoldMessenger.of(
-                                                            context)
-                                                        .showSnackBar(
-                                                            const SnackBar(
-                                                                content: Text(
-                                                                    'Please fill up all fields properly!')));
+                                                    Get.snackbar('ERROR',
+                                                        'Please fill up all fields properly!');
                                                   }
                                                 },
                                                 style: ElevatedButton.styleFrom(

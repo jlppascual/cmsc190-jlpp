@@ -116,6 +116,8 @@ class _ResponseUnitHistoryState extends State<ResponseUnitHistory> {
                                                 .get('rid'),
                                             uid: snapshot.data!.docs[index]
                                                 .get('uid'),
+                                            downloadUrl: snapshot.data!.docs[index]
+                                              .get('downloadUrl'),
                                             userLoc: snapshot.data!.docs[index]
                                                 .get('coordinates')));
                                       },

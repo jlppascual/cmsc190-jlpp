@@ -12,14 +12,11 @@ import 'package:alpha_lifeguard/pages/emergency_establishment/register_page.dart
 import 'package:alpha_lifeguard/services/user_auth.dart'; 
 
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 // ... 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  var type = prefs.getString("type");
-  debugPrint(type);
+
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform)
       .then((value) => {
             Get.put(UserAuthService()),

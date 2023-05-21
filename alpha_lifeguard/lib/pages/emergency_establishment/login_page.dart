@@ -1,4 +1,3 @@
-import 'package:alpha_lifeguard/pages/emergency_establishment/main_home.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -14,6 +13,8 @@ class EstablishmentLogin extends StatefulWidget {
 class _EstablishmentLoginState extends State<EstablishmentLogin> {
   final _formKey = GlobalKey<FormState>();
   final controller = Get.put(AuthController());
+  
+  bool isObscured = false;
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +64,7 @@ class _EstablishmentLoginState extends State<EstablishmentLogin> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
                                   children: <Widget>[
-                                     Text("Email: ",
+                                    Text("Email: ",
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 15,
@@ -95,7 +96,7 @@ class _EstablishmentLoginState extends State<EstablishmentLogin> {
                                               errorStyle: const TextStyle(
                                                   color: Colors.white)),
                                           style: const TextStyle(
-                                              color: Colors.black),
+                                              color: Colors.white),
                                         )),
                                   ],
                                 ),
@@ -103,7 +104,7 @@ class _EstablishmentLoginState extends State<EstablishmentLogin> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceEvenly,
                                     children: [
-                                       Text("Password: ",
+                                      Text("Password: ",
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 15,
@@ -111,6 +112,7 @@ class _EstablishmentLoginState extends State<EstablishmentLogin> {
                                       SizedBox(
                                           width: 200,
                                           child: TextFormField(
+                                            obscureText: isObscured,
                                             controller: controller.password,
                                             validator: (val) {
                                               if (val == null || val.isEmpty) {
@@ -119,6 +121,18 @@ class _EstablishmentLoginState extends State<EstablishmentLogin> {
                                               return null;
                                             },
                                             decoration: InputDecoration(
+                                              suffixIcon: IconButton(
+                                              color: Colors.white,
+                                              icon: isObscured == true
+                                                  ? Icon(Icons
+                                                      .visibility_off)
+                                                  : Icon(Icons.visibility),
+                                              onPressed: () {
+                                                setState(() {
+                                                  isObscured = !isObscured;
+                                                });
+                                              },
+                                            ),
                                                 enabledBorder:
                                                     const UnderlineInputBorder(
                                                   borderSide: BorderSide(
@@ -135,7 +149,7 @@ class _EstablishmentLoginState extends State<EstablishmentLogin> {
                                                 errorStyle: const TextStyle(
                                                     color: Colors.white)),
                                             style: const TextStyle(
-                                                color: Colors.black),
+                                                color: Colors.white),
                                           ))
                                     ]),
                                 Container(
@@ -157,23 +171,20 @@ class _EstablishmentLoginState extends State<EstablishmentLogin> {
                                                         controller.password.text
                                                             .trim());
                                                 if (res == true) {
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(const SnackBar(
-                                                          content: Text(
-                                                              'Successfully logged in!')));
-                                                  Get.to(() =>
-                                                      const EstablishmentMain());
+                                                  Get.snackbar('SUCCESS: ',
+                                                      'Successfully logged in');
+                                                  controller.email.clear();
+                                                  controller.password.clear();
+
+                                                  controller.email.clear();
+                                                  controller.password.clear();
                                                 } else {
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(SnackBar(
-                                                          content: Text(
-                                                              res as String)));
+                                                  Get.snackbar(
+                                                      'ERROR: ', '$res');
                                                 }
                                               } else {
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(const SnackBar(
-                                                        content: Text(
-                                                            'Please fill up all fields properly!')));
+                                                Get.snackbar('ERROR: ',
+                                                    'please fill up all fields properly');
                                               }
                                             },
                                             style: ElevatedButton.styleFrom(

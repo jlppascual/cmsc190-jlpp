@@ -1,9 +1,13 @@
+import 'dart:io';
+
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:alpha_lifeguard/controllers/auth_controller.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../services/user_auth.dart';
-import 'main_home.dart';
 
 class UserInfoPage extends StatefulWidget {
   const UserInfoPage({super.key});
@@ -19,6 +23,70 @@ var iIcon = Icons.clear;
 var textLength = 0;
 
 class _UserInfoPageState extends State<UserInfoPage> {
+  String imageUrl = '';
+  String imagePath = '';
+  XFile? _imageFile;
+
+  final ImagePicker _picker = ImagePicker();
+  double? progress;
+  UploadTask? uploadTask;
+
+  Future uploadReportImage() async {
+    final path = 'reports/${_imageFile!.name}';
+    final file = File(_imageFile!.path);
+
+    final ref = FirebaseStorage.instance.ref().child(path);
+
+    setState(() {
+      uploadTask = ref.putFile(file);
+    });
+
+    final snapshot = await uploadTask!.whenComplete(() {});
+
+    final urlDownload = await snapshot.ref.getDownloadURL();
+
+    setState(() {
+      imageUrl = urlDownload;
+      imagePath = path;
+    });
+  }
+
+  _getImage() async {
+    XFile? selectedFile = await _picker.pickImage(
+        source: ImageSource.gallery, maxWidth: 1800, maxHeight: 1800);
+    if (selectedFile != null) {
+      setState(() {
+        _imageFile = selectedFile;
+      });
+    }
+
+    uploadReportImage();
+  }
+
+  Widget buildProgress() => StreamBuilder<TaskSnapshot>(
+      stream: uploadTask?.snapshotEvents,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          final data = snapshot.data!;
+          double progress = data.bytesTransferred / data.totalBytes;
+
+          return SizedBox(
+              height: 30,
+              width: 100,
+              child: Stack(fit: StackFit.expand, children: [
+                LinearProgressIndicator(
+                    value: progress,
+                    backgroundColor: Colors.grey,
+                    color: Colors.green[700]),
+                Center(
+                    child: Text('${100 * progress.roundToDouble()}%',
+                        style: const TextStyle(color: Colors.white)))
+              ]));
+        } else {
+          return const SizedBox(height: 30);
+        }
+      });
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,7 +95,17 @@ class _UserInfoPageState extends State<UserInfoPage> {
             child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            
+            Container(
+                padding: const EdgeInsets.fromLTRB(10, 80, 0, 0),
+                alignment: Alignment.topLeft,
+                child: IconButton(
+                    icon: Icon(
+                      Icons.arrow_back,
+                      color: Colors.red[700],
+                    ),
+                    onPressed: () {
+                      Get.back();
+                    })),
             SizedBox(
                 height: 180,
                 child: Stack(
@@ -47,6 +125,34 @@ class _UserInfoPageState extends State<UserInfoPage> {
                   color: Colors.red[700],
                 ),
                 child: Column(children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 30),
+                    child: CircleAvatar(
+                        radius: 80,
+                        backgroundColor: Colors.white,
+                        child: CircleAvatar(
+                          radius: 77,
+                          backgroundImage: NetworkImage(imageUrl),
+                        )),
+                  ),
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 3, horizontal: 20),
+                    child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.yellow[50],
+                            foregroundColor: Colors.red[700]),
+                        onPressed: () {
+                          _getImage();
+                        },
+                        child: const SizedBox(
+                            width: 120,
+                            child: Row(children: [
+                              Text('Attach Image '),
+                              Icon(Icons.image)
+                            ]))),
+                  ),
+                  buildProgress(),
                   const SizedBox(height: 30),
                   Form(
                     key: _formKey,
@@ -111,7 +217,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
                                         controller: controller.lastName,
                                         validator: (val) {
                                           if (val == null || val.isEmpty) {
-                                            return 'Please complied field';
+                                            return 'Please complete the field';
                                           }
                                           return null;
                                         },
@@ -154,20 +260,19 @@ class _UserInfoPageState extends State<UserInfoPage> {
                               ),
                               onPressed: () async {
                                 if (_formKey.currentState!.validate()) {
-                                  var res =
-                                     await UserAuthService.instance.updateName();
-
+                                  var res = await UserAuthService.instance
+                                      .updateName();
+                                  
                                   if (res == true) {
-                                    Get.offAll(() => const UserMain());
+                                    final SharedPreferences s =
+                                        await SharedPreferences.getInstance();
+                                    s.setBool("newUser", false);
                                   } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text(res as String)));
+                                    Get.snackbar('ERROR: ', '$res');
                                   }
                                 } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content: Text(
-                                              'Please fill up all fields properly!')));
+                                  Get.snackbar('ERROR: ',
+                                      'Please fill up all fields properly');
                                 }
                               },
                               child: const Text('CONTINUE')))

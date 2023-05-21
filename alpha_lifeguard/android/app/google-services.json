@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "174727970445-b66n74lj2dolvmlp4o18sgiopu0m0b3h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.alpha_lifeguard",
+            "certificate_hash": "cc1c28107219343c93f1c33796a8625a107cfb83"
+          }
+        },
+        {
           "client_id": "174727970445-isdrbgg7dt3vmgqucv0ha9cs9ascbn9b.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,6 +37,13 @@
             {
               "client_id": "174727970445-isdrbgg7dt3vmgqucv0ha9cs9ascbn9b.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "174727970445-pgfv4fin7g21c0panh5hgffbr1lj91vt.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.alphaLifeguard"
+              }
             }
           ]
         }

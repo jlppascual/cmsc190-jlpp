@@ -16,7 +16,6 @@ class _ResponseHomeState extends State<ResponseHome> {
 
   @override
   void initState() {
-    // TODO: implement setState
     super.initState();
     Future.delayed(Duration.zero, () async {
       snapshotUser = await _getResponderInfo();
@@ -126,8 +125,10 @@ class _ResponseHomeState extends State<ResponseHome> {
                                               .get('rid'),
                                           uid: snapshot.data!.docs[index]
                                               .get('uid'),
-                                          userLoc: snapshot.data!.docs[index]
-                                              .get('coordinates')));
+                                          downloadUrl: snapshot.data!.docs[index]
+                                              .get('downloadUrl'),
+                                          userLoc:
+                                              snapshot.data!.docs[index].get('coordinates')));
                                     },
                                     child: Row(
                                       mainAxisAlignment:

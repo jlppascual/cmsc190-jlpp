@@ -1,8 +1,10 @@
 import 'dart:async';
-import 'package:alpha_lifeguard/utils/map_constants.dart';
+import 'package:alpha_lifeguard/pages/regular_user/full_map.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import '../../services/user_service.dart';
 
 // ignore: must_be_immutable
 class UserReportDetailsPage extends StatefulWidget {
@@ -14,6 +16,7 @@ class UserReportDetailsPage extends StatefulWidget {
     required this.addressed,
     required this.date,
     required this.rid,
+    required this.uid,
     required this.userLoc,
     required this.downloadUrl,
   });
@@ -24,6 +27,7 @@ class UserReportDetailsPage extends StatefulWidget {
   final dynamic finished;
   dynamic addressed;
   final dynamic rid;
+  final dynamic uid;
   final Map<String, dynamic> userLoc;
   final String downloadUrl;
 
@@ -33,36 +37,42 @@ class UserReportDetailsPage extends StatefulWidget {
 
 class _UserReportDetailsPageState extends State<UserReportDetailsPage>
     with TickerProviderStateMixin {
-  final Completer<GoogleMapController> _controller = Completer();
-  late CameraPosition _googleCamPos;
 
   final List<Marker> markers = <Marker>[];
   List<LatLng> polyLineCoordinates = [];
 
   var ref;
 
+  String? profilePicture;
+  String? firstName;
+  String? lastName;
+  String? phoneNumber;
+
   Position? currentLocation;
   @override
   void initState() {
-    // TODO: implement setState
     super.initState();
-
-    _googleCamPos = CameraPosition(
-        target: LatLng(widget.userLoc['latitude'], widget.userLoc['longitude']),
-        zoom: MapConstants.defaultCameraZoom,
-        tilt: 0,
-        bearing: 0);
 
     markers.add(Marker(
         markerId: const MarkerId('1'),
         position:
             LatLng(widget.userLoc['latitude'], widget.userLoc['longitude']),
         infoWindow: const InfoWindow(title: 'Victim Current Location')));
+
+    Future.delayed(Duration.zero, () async {
+      Map<String,dynamic> data = await UserServices.instance.getUserMapDetails();
+
+      setState(() {
+        profilePicture = data['imageUrl'];
+        firstName = data['firstName'];
+        lastName = data['lastName'];
+        phoneNumber = data['phoneNumber'];
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('WIDGET IS HERE: ' + widget.downloadUrl);
     return DefaultTabController(
         length: 2,
         child: Builder(builder: (BuildContext context) {
@@ -82,25 +92,41 @@ class _UserReportDetailsPageState extends State<UserReportDetailsPage>
                   ListView(
                     children: <Widget>[
                       Center(
-                          child: SizedBox(
-                              width: 250,
-                              height: 250,
-                              child: Image(
-                                  image: widget.downloadUrl == ''
-                                      ? const NetworkImage(
-                                          'https://firebasestorage.googleapis.com/v0/b/cmsc190-lifeguard.appspot.com/o/reports%2Fdefault.jpg?alt=media&token=ffe3854a-12c1-47a8-bc4d-d9b9e6355c94')
-                                      : NetworkImage(widget.downloadUrl)))),
+                          child: GestureDetector(
+                              child: SizedBox(
+                                  width: 250,
+                                  height: 250,
+                                  child: Image(
+                                      image: widget.downloadUrl == ''
+                                          ? const NetworkImage(
+                                              'https://firebasestorage.googleapis.com/v0/b/cmsc190-lifeguard.appspot.com/o/reports%2Fdefault.jpg?alt=media&token=ffe3854a-12c1-47a8-bc4d-d9b9e6355c94')
+                                          : NetworkImage(widget.downloadUrl))),
+                              onTap: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return Dialog(
+                                          backgroundColor: Colors.transparent,
+                                          child: Container(
+                                              width: MediaQuery.of(context)
+                                                  .size
+                                                  .width,
+                                              height: MediaQuery.of(context)
+                                                  .size
+                                                  .height,
+                                              decoration: BoxDecoration(
+                                                  color: Colors.transparent,
+                                                  image: DecorationImage(
+                                                      image: NetworkImage(
+                                                          widget.downloadUrl),
+                                                      fit: BoxFit.contain))));
+                                    });
+                              })),
                       const Padding(
                         padding: EdgeInsets.only(left: 15),
                         child: Text(
                           'REPORT LOCATION',
                           style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.only(left: 15),
-                        child: Text(
-                          'Blk A Lot B 2-3th St. Subdivision Manila City, 1080',
                         ),
                       ),
                       const Padding(
@@ -112,7 +138,7 @@ class _UserReportDetailsPageState extends State<UserReportDetailsPage>
                       ),
                       Padding(
                         padding: const EdgeInsets.only(left: 15),
-                        child: widget.desc.toString() == 'null'
+                        child: widget.desc.toString() == ''
                             ? const Text('no description written')
                             : Text(widget.desc.toString()),
                       ),
@@ -180,103 +206,73 @@ class _UserReportDetailsPageState extends State<UserReportDetailsPage>
                   ),
                   ListView(
                     children: <Widget>[
-                      const Center(
+                      const SizedBox(height: 20),
+                      Center(
                           child: SizedBox(
                               width: 250,
                               height: 250,
                               child: Image(
-                                  image: NetworkImage(
-                                      'https://i.pinimg.com/originals/09/b3/34/09b334fd23b9be6a472a2f3eada61759.jpg')))),
-                      const Row(
+                                  image: profilePicture == '' ||
+                                          profilePicture == null
+                                      ? const NetworkImage(
+                                          'https://firebasestorage.googleapis.com/v0/b/cmsc190-lifeguard.appspot.com/o/reports%2Fdefault.jpg?alt=media&token=ffe3854a-12c1-47a8-bc4d-d9b9e6355c94')
+                                      : NetworkImage(profilePicture!)))),
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Padding(
-                            padding: EdgeInsets.only(left: 15),
+                            padding: EdgeInsets.only(left: 15, top: 20),
                             child: Text(
-                              'NAME',
+                              'NAME: ',
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                           ),
                           Padding(
-                            padding: EdgeInsets.only(left: 15),
+                            padding: EdgeInsets.only(left: 15, top: 20),
                             child: Text(
-                              'Bae Irene',
+                              '${firstName} ${lastName}',
                               textAlign: TextAlign.right,
                             ),
                           ),
                         ],
                       ),
-                      const Row(
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Padding(
                             padding: EdgeInsets.only(left: 15, top: 15),
                             child: Text(
-                              'PHONE NUMBER',
+                              'PHONE NUMBER:',
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                           ),
                           Padding(
                               padding: EdgeInsets.only(left: 15, top: 15),
                               child: Text(
-                                '+63 123 456 7890',
+                                '+63$phoneNumber',
                                 textAlign: TextAlign.right,
                               )),
                         ],
                       ),
-                      SizedBox(
-                          width: MediaQuery.of(context).size.width,
-                          height: 300,
-                          child: markers == []
-                              ? const Text('Loading...')
-                              : GoogleMap(
-                                  initialCameraPosition: _googleCamPos,
-                                  markers: Set<Marker>.of(markers),
-                                  mapType: MapType.normal,
-                                  myLocationEnabled: true,
-                                  compassEnabled: true,
-                                  onMapCreated:
-                                      (GoogleMapController controller) {
-                                    if (!_controller.isCompleted) {
-                                      _controller.complete(controller);
-                                    } else {
-                                      // do nothing
-                                    }
-                                  },
-                                )),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Padding(
-                            padding: const EdgeInsets.only(
-                                left: 55, top: 20, bottom: 10, right: 10),
+                            padding: const EdgeInsets.only(top: 20),
                             child: SizedBox(
-                                width: 100,
+                                width: 200,
                                 height: 30,
                                 child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.green[700],
-                                        foregroundColor: Colors.yellow[100]),
-                                    onPressed: () {
-                                      debugPrint('finished clicked');
-                                    },
-                                    child: const Text('FINISHED'))),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                left: 10, top: 20, bottom: 10, right: 55),
-                            child: SizedBox(
-                                width: 100,
-                                height: 30,
-                                child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.red[700],
-                                        foregroundColor: Colors.yellow[100]),
-                                    onPressed: () {
-                                      debugPrint('finished clicked');
-                                    },
-                                    child: const Text('CANCEL'))),
-                          ),
+                                  style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.red[700],
+                                      foregroundColor: Colors.yellow[100]),
+                                  onPressed: () {
+                                    Get.to(() =>
+                                        UserFullMap(userLoc: widget.userLoc));
+                                  },
+                                  child: const Text('SHOW MAP'),
+                                )),
+                          )
                         ],
                       )
                     ],

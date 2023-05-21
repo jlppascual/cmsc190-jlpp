@@ -9,6 +9,8 @@ class UserServices extends GetxController {
   static UserServices get instance => Get.find();
   //collection reference
 
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
   final CollectionReference _userCollection =
@@ -27,7 +29,13 @@ class UserServices extends GetxController {
     }
   }
 
-  Future sendReports(String type, String desc, String imagePath, String downloadUrl, String date, String time,
+  Future sendReports(
+      String type,
+      String desc,
+      String imagePath,
+      String downloadUrl,
+      String date,
+      String time,
       Map<String, dynamic> coordinates) async {
     var ridGenerator = const Uuid(); //creates unique ids
 
@@ -82,5 +90,32 @@ class UserServices extends GetxController {
         .collection('users')
         .where('uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
         .snapshots();
+  }
+
+  Future<Map<String, dynamic>> getUserMapDetails() async {
+    DocumentSnapshot temp =
+        await _userCollection.doc(FirebaseAuth.instance.currentUser!.uid).get();
+
+    dynamic user = temp.data();
+
+    return 
+      {
+        'firstName': user['firstName'],
+        'lastName': user['lastName'],
+        'phoneNumber':user['phoneNumber'],
+        'imageUrl':user['imageUrl']
+      }
+    ;
+  }
+
+  Future<dynamic> updateProfilePicture(String urlImage) async {
+    try {
+      _userCollection
+          .doc(_auth.currentUser!.uid)
+          .update({'imageUrl': urlImage});
+      return true;
+    } catch (e) {
+      return ('ERROR: $e');
+    }
   }
 }

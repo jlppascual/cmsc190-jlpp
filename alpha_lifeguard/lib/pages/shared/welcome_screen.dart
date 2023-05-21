@@ -75,7 +75,10 @@ class WelcomeScreen extends StatelessWidget {
                                           BorderRadius.all(Radius.circular(5))),
                                   backgroundColor: Colors.black,
                                   foregroundColor: Colors.white),
-                              child: const Text('Emergency Establishment'),
+                              child: const Text(
+                                'Emergency Establishment',
+                                textAlign: TextAlign.center,
+                              ),
                             ),
                           ),
                         ),

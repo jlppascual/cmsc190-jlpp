@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:get/get.dart';
 import 'package:alpha_lifeguard/services/user_service.dart';
+import 'package:uuid/uuid.dart';
 import 'maps_page.dart';
 
 class HomeNav extends StatefulWidget {
@@ -18,7 +19,8 @@ class HomeNav extends StatefulWidget {
 class _HomeNavState extends State<HomeNav> {
   final ImagePicker _picker = ImagePicker();
   double? progress;
-  String imageUrl = '';
+  String imageUrl =
+      'https://firebasestorage.googleapis.com/v0/b/cmsc190-lifeguard.appspot.com/o/reports%2Fdefault.jpg?alt=media&token=ffe3854a-12c1-47a8-bc4d-d9b9e6355c94';
   String imagePath = '';
   XFile? _imageFile;
 
@@ -29,6 +31,14 @@ class _HomeNavState extends State<HomeNav> {
 
   String selectedType = '';
   final desc = TextEditingController();
+  String location = "Current Location";
+
+  setLocation(String value) {
+    setState(() {
+      location = value;
+    });
+  }
+
   List<String> months = [
     'Jan',
     'Feb',
@@ -47,7 +57,11 @@ class _HomeNavState extends State<HomeNav> {
   UploadTask? uploadTask;
 
   Future uploadReportImage() async {
-    final path = 'reports/${_imageFile!.name}';
+    var ridGenerator = const Uuid(); //creates unique ids
+
+    var fileName = ridGenerator.v4();
+
+    final path = 'reports/$fileName';
     final file = File(_imageFile!.path);
 
     final ref = FirebaseStorage.instance.ref().child(path);
@@ -73,6 +87,7 @@ class _HomeNavState extends State<HomeNav> {
         _imageFile = selectedFile;
       });
     }
+    uploadReportImage();
   }
 
   @override
@@ -119,22 +134,52 @@ class _HomeNavState extends State<HomeNav> {
                             vertical: 10, horizontal: 10),
                         child: SizedBox(
                             width: 330,
-                            child: TextField(
-                              onTap: () {
-                                Get.to(() =>
-                                    UserMapsPage(currLocation: currLocation));
-                                debugPrint(currLocation.toString());
-                              },
-                              decoration: const InputDecoration(
-                                  prefixIcon: Icon(Icons.location_pin,
-                                      color: Colors.red),
-                                  filled: true,
-                                  fillColor: Colors.white,
-                                  labelText: "Current Location",
-                                  border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(10)))),
-                            ))),
+                            child: InkWell(
+                              hoverColor: Colors.red[100],
+                              onTap: (() => Get.to(() => UserMapsPage(
+                                  currLocation: currLocation,
+                                  setString: setLocation))),
+                              borderRadius: BorderRadius.circular(5),
+                              child: Container(
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      border:
+                                          Border.all(color: Colors.black54)),
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.6,
+                                  height: 70,
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.location_pin,
+                                          color: Colors.red),
+                                      Flexible(
+                                          child: Text(
+                                        '$location',
+                                        softWrap: true,
+                                        style: TextStyle(
+                                            color: Colors.black45,
+                                            fontSize: 14),
+                                      ))
+                                    ],
+                                  )),
+                            )
+                            // TextField(
+                            //   onTap: () {
+                            //     Get.to(() =>
+                            //         UserMapsPage(currLocation: currLocation, setString: setLocation));
+                            //   },
+                            //   decoration: InputDecoration(
+                            //       prefixIcon: Icon(Icons.location_pin,
+                            //           color: Colors.red),
+                            //       filled: true,
+                            //       fillColor: Colors.white,
+                            //       labelText: location,
+                            //       border: OutlineInputBorder(
+                            //           borderRadius: BorderRadius.all(
+                            //               Radius.circular(10)))),
+                            // )
+
+                            )),
                     const SizedBox(height: 10),
                     const Padding(
                         padding: EdgeInsets.symmetric(horizontal: 20),
@@ -356,20 +401,6 @@ class _HomeNavState extends State<HomeNav> {
                     ),
                     buildProgress(),
                     Padding(
-                        padding: const EdgeInsets.only(top: 20),
-                        child: SizedBox(
-                          width: 150,
-                          height: 40,
-                          child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.yellow[700]),
-                              onPressed: () {
-                                uploadReportImage();
-                                debugPrint('pressed');
-                              },
-                              child: const Text('UPLOAD IMAGE')),
-                        )),
-                    Padding(
                         padding: const EdgeInsets.only(top: 15),
                         child: SizedBox(
                           width: 150,
@@ -379,10 +410,8 @@ class _HomeNavState extends State<HomeNav> {
                                   backgroundColor: Colors.red[700]),
                               onPressed: () {
                                 if (selectedType == '') {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content: Text(
-                                              'Select an Incident Type!')));
+                                  Get.snackbar(
+                                      'ERROR:', 'Select an incident type!');
                                 } else {
                                   DateTime today = DateTime.now();
                                   String date =
@@ -402,17 +431,15 @@ class _HomeNavState extends State<HomeNav> {
                                         date,
                                         time,
                                         currLocation);
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                            content: Text('Report sent!')));
+                                    Get.snackbar('SUCCESS:', 'REPORT SENT!');
 
                                     setState(() {
                                       selectedType = '';
                                       desc.clear();
+                                      _imageFile = null;
                                     });
                                   } catch (e) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text(e.toString())));
+                                    Get.snackbar('ERROR:', '$e');
                                   }
                                 }
                               },

@@ -59,7 +59,6 @@ class _ResponseFullMapState extends State<ResponseFullMap> {
 
   @override
   void initState() {
-    // TODO: implement setState
     super.initState();
 
     getCurrentLocation();

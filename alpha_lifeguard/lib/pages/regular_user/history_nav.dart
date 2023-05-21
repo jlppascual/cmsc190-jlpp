@@ -116,6 +116,8 @@ class _HistoryNavState extends State<HistoryNav> {
                                                   .get('date'),
                                               rid: snapshot.data!.docs[index]
                                                   .get('rid'),
+                                              uid: snapshot.data!.docs[index]
+                                                  .get('uid'),
                                               userLoc: snapshot
                                                   .data!.docs[index]
                                                   .get('coordinates'),

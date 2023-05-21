@@ -25,7 +25,7 @@ _newRespondersModal(context) {
               decoration: BoxDecoration(
                   color: Colors.yellow[100],
                   borderRadius: BorderRadius.circular(20.0)),
-              constraints: const BoxConstraints(maxHeight: 450),
+              constraints: const BoxConstraints(maxHeight: 400),
               child: Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: Column(
@@ -124,7 +124,7 @@ _newRespondersModal(context) {
                               ))
                         ],
                       ),
-                      const SizedBox(height: 100),
+                      const SizedBox(height: 20),
                       ElevatedButton(
                           style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.red[700],
@@ -138,13 +138,13 @@ _newRespondersModal(context) {
                                     'LifeGuard!2023');
 
                             if (res == true) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content:
-                                          Text('Successfully registered!')));
+                              Get.snackbar(
+                                  'SUCCESS: ', 'Successfully registered!');
+                              controller.firstName.clear();
+                              controller.lastName.clear();
+                              controller.email.clear();
                             } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text(res as String)));
+                              Get.snackbar('ERROR: ', '$res');
                             }
                           },
                           child: const Text('Create Account'))
@@ -171,7 +171,9 @@ class _EstablishmentHomeState extends State<EstablishmentHome> {
                   child: Text(
                     'LIFEGUARD',
                     style: TextStyle(
-                        color: Colors.yellow[100], fontWeight: FontWeight.bold, fontSize: 30),
+                        color: Colors.yellow[100],
+                        fontWeight: FontWeight.bold,
+                        fontSize: 30),
                   ),
                 ))
           ],

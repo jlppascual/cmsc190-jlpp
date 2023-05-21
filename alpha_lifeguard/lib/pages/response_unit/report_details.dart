@@ -22,6 +22,7 @@ class ReportDetailsPage extends StatefulWidget {
       required this.date,
       required this.rid,
       required this.uid,
+      required this.downloadUrl,
       required this.userLoc});
 
   final dynamic desc;
@@ -31,6 +32,7 @@ class ReportDetailsPage extends StatefulWidget {
   final dynamic uid;
   dynamic addressed;
   final dynamic rid;
+  final String downloadUrl;
   final Map<String, dynamic> userLoc;
 
   @override
@@ -41,6 +43,7 @@ class _ReportDetailsPageState extends State<ReportDetailsPage>
     with TickerProviderStateMixin {
   final List<bool> _isDisabled = [false, true];
   final Completer<GoogleMapController> _controller = Completer();
+  String profilePicture = '';
 
   final List<Marker> markers = <Marker>[];
 
@@ -89,12 +92,12 @@ class _ReportDetailsPageState extends State<ReportDetailsPage>
       userReportName.add(res['firstName']);
       userReportName.add(res['lastName']);
       phoneNumber = res['phoneNumber'];
+      profilePicture = res['imageUrl'];
     });
   }
 
   @override
   void initState() {
-    // TODO: implement setState
     super.initState();
 
     getCurrentLocation();
@@ -148,6 +151,7 @@ class _ReportDetailsPageState extends State<ReportDetailsPage>
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('${widget.downloadUrl}');
     return DefaultTabController(
         length: 2,
         child: Builder(builder: (BuildContext context) {
@@ -172,13 +176,50 @@ class _ReportDetailsPageState extends State<ReportDetailsPage>
                 children: [
                   ListView(
                     children: <Widget>[
-                      const Center(
-                          child: SizedBox(
-                              width: 250,
-                              height: 250,
-                              child: Image(
-                                  image: NetworkImage(
-                                      'https://i.pinimg.com/originals/09/b3/34/09b334fd23b9be6a472a2f3eada61759.jpg')))),
+                      Center(
+                          child: GestureDetector(
+                              child: SizedBox(
+                                  width: 250,
+                                  height: 250,
+                                  child: Image(
+                                    image: widget.downloadUrl == ''
+                                        ? const NetworkImage(
+                                            'https://firebasestorage.googleapis.com/v0/b/cmsc190-lifeguard.appspot.com/o/reports%2Fdefault.jpg?alt=media&token=ffe3854a-12c1-47a8-bc4d-d9b9e6355c94')
+                                        : NetworkImage(widget.downloadUrl),
+                                    errorBuilder: (BuildContext context,
+                                        Object exception, _) {
+                                      return Center(
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            const Text('image cannot load'),
+                                            Icon(Icons.error_outline_sharp)
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  )),
+                              onTap: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return Dialog(
+                                          backgroundColor: Colors.transparent,
+                                          child: Container(
+                                              width: MediaQuery.of(context)
+                                                  .size
+                                                  .width,
+                                              height: MediaQuery.of(context)
+                                                  .size
+                                                  .height,
+                                              decoration: BoxDecoration(
+                                                  color: Colors.transparent,
+                                                  image: DecorationImage(
+                                                      image: NetworkImage(
+                                                          widget.downloadUrl),
+                                                      fit: BoxFit.contain))));
+                                    });
+                              })),
                       const Padding(
                         padding: EdgeInsets.only(left: 15),
                         child: Text(
@@ -313,25 +354,25 @@ class _ReportDetailsPageState extends State<ReportDetailsPage>
                   ),
                   ListView(
                     children: <Widget>[
-                      const Center(
+                      const SizedBox(height: 30),
+                      Center(
                           child: SizedBox(
                               width: 250,
                               height: 250,
-                              child: Image(
-                                  image: NetworkImage(
-                                      'https://i.pinimg.com/originals/09/b3/34/09b334fd23b9be6a472a2f3eada61759.jpg')))),
+                              child:
+                                  Image(image: NetworkImage(profilePicture)))),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           const Padding(
-                            padding: EdgeInsets.only(left: 15),
+                            padding: EdgeInsets.only(left: 15, top: 20),
                             child: Text(
                               'NAME: ',
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.only(left: 15),
+                            padding: const EdgeInsets.only(left: 15, top: 20),
                             child: Text(
                               userReportName.isEmpty
                                   ? ' '
@@ -416,8 +457,8 @@ class _ReportDetailsPageState extends State<ReportDetailsPage>
                               height: 40,
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.yellow[800],
-                                        foregroundColor: Colors.white),
+                                    backgroundColor: Colors.yellow[800],
+                                    foregroundColor: Colors.white),
                                 onPressed: () {
                                   Get.to(() =>
                                       ResponseFullMap(userLoc: widget.userLoc));

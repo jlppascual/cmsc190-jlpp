@@ -6,6 +6,7 @@ class ResponseUnit {
   final String lastName;
   final String type;
   final String rsid;
+  final String imageUrl;
 
   ResponseUnit(
       {required this.uid,
@@ -14,7 +15,9 @@ class ResponseUnit {
       required this.firstName,
       required this.lastName,
       required this.type,
-      required this.rsid});
+      required this.rsid,
+      this.imageUrl = 'https://firebasestorage.googleapis.com/v0/b/cmsc190-lifeguard.appspot.com/o/displaypics%2Fdefault_avatar.png?alt=media&token=85b76591-1c4c-477e-9faa-22c1246c42e3',
+      });
 
   ResponseUnit.fromData(Map<String, dynamic> data)
       : uid = data['uid'],
@@ -23,7 +26,8 @@ class ResponseUnit {
         firstName = data['firstName'],
         lastName = data['lastName'],
         type = data['type'],
-        rsid = data['rid'];
+        rsid = data['rid'],
+        imageUrl = data['imageUrl'];
 
   Map<String, dynamic> toJson() {
     return {
@@ -33,7 +37,8 @@ class ResponseUnit {
       'firstName': firstName,
       'lastName': lastName,
       'type': type,
-      'rsid': rsid
+      'rsid': rsid,
+      'imageUrl': imageUrl
     };
   }
 }

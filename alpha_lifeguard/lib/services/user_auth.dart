@@ -1,6 +1,6 @@
 import 'package:alpha_lifeguard/models/user.dart';
 import 'package:alpha_lifeguard/pages/emergency_establishment/main_home.dart';
-import 'package:alpha_lifeguard/pages/regular_user/UserInfo.dart';
+import 'package:alpha_lifeguard/pages/regular_user/user_info.dart';
 import 'package:alpha_lifeguard/pages/regular_user/main_home.dart';
 import 'package:alpha_lifeguard/pages/response_unit/main_navigation.dart';
 import 'package:alpha_lifeguard/pages/shared/welcome_screen.dart';
@@ -157,12 +157,11 @@ class UserAuthService extends GetxController {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setString('type', 'user');
     } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(e.toString())));
+      Get.snackbar('ERROR: ', '$e');
+      
       _isLoading = false;
     } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(e.toString())));
+            Get.snackbar('ERROR: ', '$e');
       _isLoading = false;
     }
 
@@ -278,7 +277,7 @@ class UserAuthService extends GetxController {
       _tempUid = FirebaseAuth.instanceFor(app: app).currentUser?.uid;
       _uid = _auth.currentUser?.uid;
 
-      var estab = await _firebaseFirestore.collection('users').doc(uid).get();
+      var estab = await _firebaseFirestore.collection('establishments').doc(uid).get();
 
       var unit = ResponseUnit(
           uid: tempUid,
@@ -287,7 +286,7 @@ class UserAuthService extends GetxController {
           lastName: lastName,
           email: email,
           type: estab['type'],
-          password: password);
+          password: encryptedPassword);
       await ResponderService.instance.createResponder(unit);
       app.delete();
       return true;
@@ -333,6 +332,7 @@ class UserAuthService extends GetxController {
 
     Future<dynamic> updateEstablishmentName() async {
     try {
+      print(_controller.name.text.trim());
       _userCollection.doc(_uid).update({
         'name': _controller.name.text.trim(),
       });

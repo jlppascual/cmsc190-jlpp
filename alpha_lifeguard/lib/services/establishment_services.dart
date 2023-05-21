@@ -11,8 +11,8 @@ class EstablishmentServices extends GetxController {
 
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
-  final CollectionReference _userCollection =
-      FirebaseFirestore.instance.collection('users');
+  final CollectionReference _establishmentCollection=
+      FirebaseFirestore.instance.collection('establishments');
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   //password key to encrypt.decrypt
@@ -20,7 +20,7 @@ class EstablishmentServices extends GetxController {
 
   Future createEstablishment(Establishment user) async {
     try {
-      return await _userCollection.doc(user.uid).set(user.toJson());
+      return await _establishmentCollection.doc(user.uid).set(user.toJson());
     } catch (e) {
       return e.toString();
     }
@@ -34,7 +34,7 @@ class EstablishmentServices extends GetxController {
   }
 
   Future<DocumentSnapshot> getEstablishmentDetails() async {
-    return await _userCollection
+    return await _establishmentCollection
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .get();
   }
@@ -48,7 +48,7 @@ class EstablishmentServices extends GetxController {
 
     if (decryptedPassword == password) {
       try {
-        _userCollection.doc(_auth.currentUser!.uid).update({'email': newEmail});
+        _establishmentCollection.doc(_auth.currentUser!.uid).update({'email': newEmail});
         _auth.currentUser!.updateEmail(newEmail);
         return true;
       } catch (e) {
@@ -61,7 +61,7 @@ class EstablishmentServices extends GetxController {
 
     Stream<QuerySnapshot<Map<String, dynamic>>> getStreamEstablishmentDetails() {
     return _firebaseFirestore
-        .collection('users')
+        .collection('establishments')
         .where('uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
         .snapshots();
   }
@@ -77,7 +77,7 @@ class EstablishmentServices extends GetxController {
 
     if (decryptedPassword == currPassword) {
       try {
-        _userCollection
+        _establishmentCollection
             .doc(_auth.currentUser!.uid)
             .update({'password': encryptedPassword});
         _auth.currentUser!.updatePassword(newPassword);

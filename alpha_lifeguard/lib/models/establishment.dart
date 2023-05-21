@@ -12,7 +12,7 @@ class Establishment {
       required this.password,
       required this.role,
       required this.type,
-      this.name = ''
+      this.name = 'Establishment Name'
       });
 
   Establishment.fromData(Map<String, dynamic> data)

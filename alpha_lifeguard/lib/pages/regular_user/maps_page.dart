@@ -7,9 +7,11 @@ import '../../utils/map_constants.dart';
 
 // ignore: must_be_immutable
 class UserMapsPage extends StatefulWidget {
-  UserMapsPage({super.key, required this.currLocation});
+  UserMapsPage(
+      {super.key, required this.currLocation, required this.setString});
 
   Map<String, dynamic> currLocation;
+  Function setString;
 
   @override
   State<UserMapsPage> createState() => _UserMapsPageState();
@@ -33,6 +35,43 @@ class _UserMapsPageState extends State<UserMapsPage> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration.zero, () {
+      MapServices.instance.getUserCurrentLocation().then((value) async {
+        // specified current users location
+        CameraPosition newCameraPosition = CameraPosition(
+            target: LatLng(value.latitude, value.longitude),
+            zoom: 14,
+            bearing: 0,
+            tilt: 0);
+        final GoogleMapController controller = await _controller.future;
+        controller
+            .animateCamera(CameraUpdate.newCameraPosition(newCameraPosition));
+        setState(() {
+          _googleCamPos = newCameraPosition;
+          widget.currLocation = <String, dynamic>{
+            'latitude': value.latitude,
+            'longitude': value.longitude
+          };
+
+          // marker added for current users location
+          markers.add(Marker(
+            markerId: const MarkerId("1"),
+            position: LatLng(value.latitude, value.longitude),
+            infoWindow: const InfoWindow(
+              title: 'My Current Location',
+            ),
+          ));
+
+          widget.setString(
+              'latitude: ${value.latitude} longitude: ${value.longitude}');
+        });
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.red,
@@ -48,6 +87,25 @@ class _UserMapsPageState extends State<UserMapsPage> {
         compassEnabled: true,
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
+        },
+        onTap: (LatLng coordinates) async {
+          debugPrint('${coordinates.latitude} ${coordinates.longitude}');
+          CameraPosition newCameraPosition = CameraPosition(
+              target: LatLng(coordinates.latitude, coordinates.longitude),
+              zoom: 14,
+              bearing: 0,
+              tilt: 0);
+          final GoogleMapController controller = await _controller.future;
+          controller
+              .animateCamera(CameraUpdate.newCameraPosition(newCameraPosition));
+          setState(() {
+            markers.add(Marker(
+                markerId: const MarkerId('1'),
+                position: LatLng(coordinates.latitude, coordinates.longitude),
+                infoWindow: const InfoWindow(
+                  title: 'My Current Location',
+                )));
+          });
         },
       ),
       floatingActionButton: FloatingActionButton(
@@ -77,8 +135,6 @@ class _UserMapsPageState extends State<UserMapsPage> {
                   title: 'My Current Location',
                 ),
               ));
-
-              debugPrint(widget.currLocation.toString());
             });
           });
         },

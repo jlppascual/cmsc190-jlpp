@@ -1,4 +1,3 @@
-import 'package:alpha_lifeguard/pages/emergency_establishment/main_home.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:alpha_lifeguard/pages/emergency_establishment/login_page.dart';
@@ -14,22 +13,15 @@ class EstablishmentRegister extends StatefulWidget {
 
 class _EstablishmentRegister extends State<EstablishmentRegister>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-
   final _formKey = GlobalKey<FormState>();
+  bool isObscured = true;
 
   final controller = Get.put(AuthController());
+  String imageUrl = '';
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
   }
 
   @override
@@ -120,7 +112,7 @@ class _EstablishmentRegister extends State<EstablishmentRegister>
                                             errorStyle: const TextStyle(
                                                 color: Colors.white)),
                                         style: const TextStyle(
-                                            color: Colors.black),
+                                            color: Colors.white),
                                       )),
                                 ],
                               ),
@@ -136,6 +128,7 @@ class _EstablishmentRegister extends State<EstablishmentRegister>
                                   SizedBox(
                                       width: 200,
                                       child: TextFormField(
+                                        obscureText: isObscured,
                                         controller: controller.password,
                                         validator: (val) {
                                           if (val == null || val.isEmpty) {
@@ -144,6 +137,18 @@ class _EstablishmentRegister extends State<EstablishmentRegister>
                                           return null;
                                         },
                                         decoration: InputDecoration(
+                                            suffixIcon: IconButton(
+                                              color: Colors.white,
+                                              icon: isObscured == true
+                                                  ? Icon(Icons
+                                                      .visibility_off)
+                                                  : Icon(Icons.visibility),
+                                              onPressed: () {
+                                                setState(() {
+                                                  isObscured = !isObscured;
+                                                });
+                                              },
+                                            ),
                                             enabledBorder:
                                                 const UnderlineInputBorder(
                                               borderSide: BorderSide(
@@ -160,7 +165,7 @@ class _EstablishmentRegister extends State<EstablishmentRegister>
                                             errorStyle: const TextStyle(
                                                 color: Colors.white)),
                                         style: const TextStyle(
-                                            color: Colors.black),
+                                            color: Colors.white),
                                       ))
                                 ],
                               ),
@@ -224,22 +229,19 @@ class _EstablishmentRegister extends State<EstablishmentRegister>
                                           controller.type.toString().trim());
 
                                   if (res == true) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                            content: Text(
-                                                'Successfully registered!')));
-                                    dispose();
-
-                                    Get.to(() => const EstablishmentMain());
+                                    Get.snackbar(
+                                        'SUCCESS', 'Successfully registered!');
+                                    controller.email.clear();
+                                    controller.password.clear();
                                   } else {
+                                    Get.snackbar('ERROR', '$res!');
+
                                     ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(content: Text(res as String)));
                                   }
                                 } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content: Text(
-                                              'Please fill up all fields properly!')));
+                                  Get.snackbar('ERROR',
+                                      'Please fill up all fields properly');
                                 }
                               },
                               child: const Text('REGISTER')))

@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
    <application
-        android:label="alpha_lifeguard"
+        android:label="Lifeguard"
         android:name="${applicationName}"
         android:icon="@mipmap/lifeguard"
         android:value="AIzaSyBVzTXbqWFXKeMLndMaqkK_D_haH43x5E8">
