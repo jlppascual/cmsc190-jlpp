@@ -69,16 +69,6 @@ class UserAuthService extends GetxController {
 
     if (user != null) {
       await Future.delayed(const Duration(seconds: 5), () async {
-        //load
-
-        // regularUser =
-        //     await _firebaseFirestore.collection("users").doc(user.uid).get();
-        // responseUnit = await _firebaseFirestore
-        //     .collection("response_units")
-        //     .doc(user.uid)
-        //     .get();
-        // establishment =
-        //     await _firebaseFirestore.collection("users").doc(user.uid).get();
       });
     }
 
@@ -161,8 +151,8 @@ class UserAuthService extends GetxController {
           var regUser =
               RegularUser(uid: uid, phoneNumber: phoneNumber, role: role);
           await UserServices.instance.createUser(regUser);
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          prefs.setString('newUser', 'true');
+          SharedPreferences s = await SharedPreferences.getInstance();
+          await s.setString('newUser', 'true');
         }
       }
       _isLoading = false;
