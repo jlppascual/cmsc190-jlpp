@@ -430,6 +430,7 @@ class _HomeNavState extends State<HomeNav> {
                                         imageUrl,
                                         date,
                                         time,
+                                        location,
                                         currLocation);
                                     Get.snackbar('SUCCESS:', 'REPORT SENT!');
 

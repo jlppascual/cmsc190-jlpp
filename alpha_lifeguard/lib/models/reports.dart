@@ -11,6 +11,7 @@ class Report {
   bool addressed;
   String desc;
   String addressedBy;
+  String address;
 
   Report(
       {required this.uid,
@@ -24,7 +25,9 @@ class Report {
       required this.date,
       required this.time,
       required this.coordinates,
-      this.addressedBy = ''});
+      this.addressedBy = '',
+      required this.address
+      });
 
   Report.fromData(Map<String, dynamic> data)
       : uid = data['uid'],
@@ -38,7 +41,8 @@ class Report {
         date = data['date'],
         time = data['time'],
         coordinates = data['coordinates'],
-        addressedBy = data['addressedBy'];
+        addressedBy = data['addressedBy'],
+        address = data['address'];
 
   Map<String, dynamic> toJson() {
     return {
@@ -53,7 +57,8 @@ class Report {
       'coordinates': coordinates,
       'addressed': addressed,
       'finished': finished,
-      'addressedBy':addressedBy
+      'addressedBy':addressedBy,
+      'address': address
     };
   }
 }

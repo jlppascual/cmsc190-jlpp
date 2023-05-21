@@ -124,6 +124,9 @@ class _HistoryNavState extends State<HistoryNav> {
                                               downloadUrl: snapshot
                                                   .data!.docs[index]
                                                   .get('downloadUrl'),
+                                              address: snapshot
+                                                  .data!.docs[index]
+                                                  .get('address')
                                             ));
                                       },
                                       child: Column(

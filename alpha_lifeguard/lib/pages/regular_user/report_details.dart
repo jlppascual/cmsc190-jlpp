@@ -8,18 +8,18 @@ import '../../services/user_service.dart';
 
 // ignore: must_be_immutable
 class UserReportDetailsPage extends StatefulWidget {
-  UserReportDetailsPage({
-    super.key,
-    required this.desc,
-    required this.time,
-    required this.finished,
-    required this.addressed,
-    required this.date,
-    required this.rid,
-    required this.uid,
-    required this.userLoc,
-    required this.downloadUrl,
-  });
+  UserReportDetailsPage(
+      {super.key,
+      required this.desc,
+      required this.time,
+      required this.finished,
+      required this.addressed,
+      required this.date,
+      required this.rid,
+      required this.uid,
+      required this.userLoc,
+      required this.downloadUrl,
+      required this.address});
 
   final dynamic desc;
   final dynamic date;
@@ -30,6 +30,7 @@ class UserReportDetailsPage extends StatefulWidget {
   final dynamic uid;
   final Map<String, dynamic> userLoc;
   final String downloadUrl;
+  final String address;
 
   @override
   State<UserReportDetailsPage> createState() => _UserReportDetailsPageState();
@@ -37,7 +38,6 @@ class UserReportDetailsPage extends StatefulWidget {
 
 class _UserReportDetailsPageState extends State<UserReportDetailsPage>
     with TickerProviderStateMixin {
-
   final List<Marker> markers = <Marker>[];
   List<LatLng> polyLineCoordinates = [];
 
@@ -53,16 +53,16 @@ class _UserReportDetailsPageState extends State<UserReportDetailsPage>
   void initState() {
     super.initState();
 
-    markers.add(Marker(
-        markerId: const MarkerId('1'),
-        position:
-            LatLng(widget.userLoc['latitude'], widget.userLoc['longitude']),
-        infoWindow: const InfoWindow(title: 'Victim Current Location')));
-
     Future.delayed(Duration.zero, () async {
-      Map<String,dynamic> data = await UserServices.instance.getUserMapDetails();
+      Map<String, dynamic> data =
+          await UserServices.instance.getUserMapDetails();
 
       setState(() {
+        markers.add(Marker(
+            markerId: const MarkerId('1'),
+            position:
+                LatLng(widget.userLoc['latitude'], widget.userLoc['longitude']),
+            infoWindow: const InfoWindow(title: 'Victim Current Location')));
         profilePicture = data['imageUrl'];
         firstName = data['firstName'];
         lastName = data['lastName'];
@@ -123,11 +123,17 @@ class _UserReportDetailsPageState extends State<UserReportDetailsPage>
                                     });
                               })),
                       const Padding(
-                        padding: EdgeInsets.only(left: 15),
+                        padding: EdgeInsets.only(left: 15, top: 15),
                         child: Text(
-                          'REPORT LOCATION',
+                          'REPORT ADDRESS',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 15),
+                        child: widget.address.toString() == ''
+                            ? const Text('no location saved')
+                            : Text(widget.address.toString()),
                       ),
                       const Padding(
                         padding: EdgeInsets.only(left: 15, top: 15),

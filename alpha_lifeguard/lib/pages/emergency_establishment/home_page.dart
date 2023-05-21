@@ -1,3 +1,4 @@
+import 'package:alpha_lifeguard/pages/emergency_establishment/response_unit_details.dart';
 import 'package:alpha_lifeguard/services/establishment_services.dart';
 import 'package:alpha_lifeguard/services/user_auth.dart';
 import 'package:flutter/material.dart';
@@ -247,24 +248,40 @@ class _EstablishmentHomeState extends State<EstablishmentHome> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.center,
                                         children: [
-                                          Container(
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      const BorderRadius
-                                                              .horizontal(
-                                                          left: Radius.circular(
-                                                              2),
-                                                          right:
-                                                              Radius.circular(
-                                                                  2)),
-                                                  color: Colors.yellow[100]),
-                                              child: Row(children: [
-                                                Text(snapshot.data!.docs[index]
-                                                    .get('firstName')),
-                                                const Text(' '),
-                                                Text(snapshot.data!.docs[index]
-                                                    .get('lastName'))
-                                              ]))
+                                          InkWell(
+                                              onTap: () {
+                                                Get.to(() =>
+                                                    ResponseUnitDetails(
+                                                        firstName: snapshot
+                                                            .data!.docs[index]
+                                                            .get('firstName'),
+                                                        lastName: snapshot
+                                                            .data!.docs[index]
+                                                            .get('lastName'),
+                                                        email: snapshot
+                                                            .data!.docs[index]
+                                                            .get('email')));
+                                              },
+                                              child: Container(
+                                                  decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          const BorderRadius
+                                                                  .horizontal(
+                                                              left: Radius
+                                                                  .circular(2),
+                                                              right: Radius
+                                                                  .circular(2)),
+                                                      color:
+                                                          Colors.yellow[100]),
+                                                  child: Row(children: [
+                                                    Text(snapshot
+                                                        .data!.docs[index]
+                                                        .get('firstName')),
+                                                    const Text(' '),
+                                                    Text(snapshot
+                                                        .data!.docs[index]
+                                                        .get('lastName'))
+                                                  ])))
                                         ],
                                       )),
                                   const Divider(

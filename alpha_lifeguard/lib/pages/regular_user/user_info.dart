@@ -270,7 +270,8 @@ class _UserInfoPageState extends State<UserInfoPage> {
                                       await SharedPreferences.getInstance();
 
                                   s.setBool("newUser", false);
-                                  Get.to(() => const UserMain());
+                                  // Get.to(() => const UserMain());
+                                  
                                 } else {
                                   Get.snackbar('ERROR: ',
                                       'Please fill up all fields properly');

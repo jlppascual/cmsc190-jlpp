@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:alpha_lifeguard/services/user_auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -98,6 +99,19 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                     try {
                       FirebaseAuth.instance.currentUser
                           ?.sendEmailVerification();
+                    } catch (e) {
+                      debugPrint('$e');
+                    }
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                child: ElevatedButton(
+                  child: const Text('Logout'),
+                  onPressed: () {
+                    try {
+                      UserAuthService.instance.userSignOut();
                     } catch (e) {
                       debugPrint('$e');
                     }

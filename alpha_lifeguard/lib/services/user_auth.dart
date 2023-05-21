@@ -51,6 +51,9 @@ class UserAuthService extends GetxController {
   final CollectionReference _responderCollection =
       FirebaseFirestore.instance.collection('response_units');
 
+  final CollectionReference _establishmentCollection =
+      FirebaseFirestore.instance.collection('establishments');
+
   @override
   void onReady() {
     //currently logged in/ if logged out
@@ -158,6 +161,8 @@ class UserAuthService extends GetxController {
           var regUser =
               RegularUser(uid: uid, phoneNumber: phoneNumber, role: role);
           await UserServices.instance.createUser(regUser);
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.setString('newUser', 'true');
         }
       }
       _isLoading = false;
@@ -364,8 +369,7 @@ class UserAuthService extends GetxController {
 
   Future<dynamic> updateEstablishmentName() async {
     try {
-      print(_controller.name.text.trim());
-      _userCollection.doc(_uid).update({
+      _establishmentCollection.doc(_uid).update({
         'name': _controller.name.text.trim(),
       });
       return true;

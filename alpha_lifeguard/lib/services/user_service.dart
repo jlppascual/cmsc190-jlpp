@@ -36,6 +36,7 @@ class UserServices extends GetxController {
       String downloadUrl,
       String date,
       String time,
+      String address,
       Map<String, dynamic> coordinates) async {
     var ridGenerator = const Uuid(); //creates unique ids
 
@@ -57,6 +58,7 @@ class UserServices extends GetxController {
         date: date,
         time: time,
         coordinates: coordinates,
+        address: address,
         finished: false,
         addressed: false);
 

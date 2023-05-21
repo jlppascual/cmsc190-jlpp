@@ -102,25 +102,35 @@ class _ResponseUnitHistoryState extends State<ResponseUnitHistory> {
                                   return InkWell(
                                       onTap: () {
                                         Get.to(() => ReportDetailsPage(
-                                            desc: snapshot.data!.docs[index]
-                                                .get('desc'),
-                                            time: snapshot.data!.docs[index]
-                                                .get('time'),
-                                            finished: snapshot.data!.docs[index]
-                                                .get('finished'),
-                                            addressed: snapshot.data!.docs[index]
-                                                .get('addressed'),
-                                            date: snapshot.data!.docs[index]
-                                                .get('date'),
-                                            rid: snapshot.data!.docs[index]
-                                                .get('rid'),
-                                            uid: snapshot.data!.docs[index]
-                                                .get('uid'),
-                                            downloadUrl: snapshot.data!.docs[index]
-                                              .get('downloadUrl'),
-                                            userLoc: snapshot.data!.docs[index]
-                                                .get('coordinates'),
-                                            addressedBy: snapshot.data!.docs[index].get('addressedBy'),));
+                                              desc: snapshot.data!.docs[index]
+                                                  .get('desc'),
+                                              time: snapshot.data!.docs[index]
+                                                  .get('time'),
+                                              finished: snapshot
+                                                  .data!.docs[index]
+                                                  .get('finished'),
+                                              addressed: snapshot
+                                                  .data!.docs[index]
+                                                  .get('addressed'),
+                                              date: snapshot.data!.docs[index]
+                                                  .get('date'),
+                                              rid: snapshot.data!.docs[index]
+                                                  .get('rid'),
+                                              uid: snapshot.data!.docs[index]
+                                                  .get('uid'),
+                                              downloadUrl: snapshot
+                                                  .data!.docs[index]
+                                                  .get('downloadUrl'),
+                                              userLoc: snapshot
+                                                  .data!.docs[index]
+                                                  .get('coordinates'),
+                                              addressedBy: snapshot
+                                                  .data!.docs[index]
+                                                  .get('addressedBy'),
+                                              address: snapshot
+                                                  .data!.docs[index]
+                                                  .get('address'),
+                                            ));
                                       },
                                       child: Column(
                                         mainAxisAlignment:

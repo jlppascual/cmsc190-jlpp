@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_widget/google_maps_widget.dart';
+import 'package:geocoding/geocoding.dart';
 
 import '../../services/maps_service.dart';
 import '../../utils/map_constants.dart';
@@ -34,6 +35,8 @@ class _UserMapsPageState extends State<UserMapsPage> {
         infoWindow: InfoWindow(title: 'Current Location'))
   ];
 
+  List<Placemark>? placemarks;
+
   @override
   void initState() {
     super.initState();
@@ -48,24 +51,30 @@ class _UserMapsPageState extends State<UserMapsPage> {
         final GoogleMapController controller = await _controller.future;
         controller
             .animateCamera(CameraUpdate.newCameraPosition(newCameraPosition));
-        setState(() {
-          _googleCamPos = newCameraPosition;
-          widget.currLocation = <String, dynamic>{
-            'latitude': value.latitude,
-            'longitude': value.longitude
-          };
 
-          // marker added for current users location
-          markers.add(Marker(
-            markerId: const MarkerId("1"),
-            position: LatLng(value.latitude, value.longitude),
-            infoWindow: const InfoWindow(
-              title: 'My Current Location',
-            ),
-          ));
+        Future.delayed(Duration.zero, () async {
+          List<Placemark> temp =
+              await placemarkFromCoordinates(value.latitude, value.longitude);
+          setState(() {
+            placemarks = temp;
+            _googleCamPos = newCameraPosition;
+            widget.currLocation = <String, dynamic>{
+              'latitude': value.latitude,
+              'longitude': value.longitude
+            };
 
-          widget.setString(
-              'latitude: ${value.latitude} longitude: ${value.longitude}');
+            // marker added for current users location
+            markers.add(Marker(
+              markerId: const MarkerId("1"),
+              position: LatLng(value.latitude, value.longitude),
+              infoWindow: const InfoWindow(
+                title: 'My Current Location',
+              ),
+            ));
+
+            widget.setString(
+                '${placemarks?[0].street}, ${placemarks?[0].thoroughfare}, ${placemarks?[0].locality}, ${placemarks?[0].subAdministrativeArea}, ${placemarks?[0].administrativeArea}, ${placemarks?[0].postalCode}');
+          });
         });
       });
     });
