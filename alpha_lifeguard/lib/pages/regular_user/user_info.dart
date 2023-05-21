@@ -25,7 +25,7 @@ var iIcon = Icons.clear;
 var textLength = 0;
 
 class _UserInfoPageState extends State<UserInfoPage> {
-  String imageUrl = '';
+  String imageUrl ='https://firebasestorage.googleapis.com/v0/b/cmsc190-lifeguard.appspot.com/o/displaypics%2Fdefault_avatar.png?alt=media&token=85b76591-1c4c-477e-9faa-22c1246c42e3';
   String imagePath = '';
   XFile? _imageFile;
 
@@ -262,14 +262,13 @@ class _UserInfoPageState extends State<UserInfoPage> {
                               ),
                               onPressed: () async {
                                 if (_formKey.currentState!.validate()) {
+                                  final SharedPreferences s =
+                                      await SharedPreferences.getInstance();
+                                  await s.setBool("newUser", false);
                                   await UserAuthService.instance.updateName();
                                   await UserServices.instance
                                       .updateProfilePicture(imageUrl);
 
-                                  final SharedPreferences s =
-                                      await SharedPreferences.getInstance();
-
-                                  await s.setBool("newUser", false);
                                   Get.to(() => const UserMain());
                                 } else {
                                   Get.snackbar('ERROR: ',

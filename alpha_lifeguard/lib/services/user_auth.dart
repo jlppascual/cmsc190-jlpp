@@ -152,7 +152,7 @@ class UserAuthService extends GetxController {
               RegularUser(uid: uid, phoneNumber: phoneNumber, role: role);
           await UserServices.instance.createUser(regUser);
           SharedPreferences s = await SharedPreferences.getInstance();
-          await s.setString('newUser', 'true');
+          await s.setBool('newUser', true);
         }
       }
       _isLoading = false;

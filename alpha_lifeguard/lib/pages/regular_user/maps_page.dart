@@ -9,10 +9,10 @@ import '../../utils/map_constants.dart';
 // ignore: must_be_immutable
 class UserMapsPage extends StatefulWidget {
   UserMapsPage(
-      {super.key, required this.currLocation, required this.setString});
+      {super.key, required this.setCoordinates, required this.setString});
 
-  Map<String, dynamic> currLocation;
   Function setString;
+  Function setCoordinates;
 
   @override
   State<UserMapsPage> createState() => _UserMapsPageState();
@@ -58,10 +58,8 @@ class _UserMapsPageState extends State<UserMapsPage> {
           setState(() {
             placemarks = temp;
             _googleCamPos = newCameraPosition;
-            widget.currLocation = <String, dynamic>{
-              'latitude': value.latitude,
-              'longitude': value.longitude
-            };
+            widget.setCoordinates(
+                {'latitude': value.latitude, 'longitude': value.longitude});
 
             // marker added for current users location
             markers.add(Marker(
@@ -131,10 +129,8 @@ class _UserMapsPageState extends State<UserMapsPage> {
                 CameraUpdate.newCameraPosition(newCameraPosition));
             setState(() {
               _googleCamPos = newCameraPosition;
-              widget.currLocation = <String, dynamic>{
-                'latitude': value.latitude,
-                'longitude': value.longitude
-              };
+              widget.setCoordinates(
+                  {'latitude': value.latitude, 'longitude': value.longitude});
 
               // marker added for current users location
               markers.add(Marker(

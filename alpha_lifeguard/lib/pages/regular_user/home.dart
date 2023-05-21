@@ -39,6 +39,12 @@ class _HomeNavState extends State<HomeNav> {
     });
   }
 
+  setCoordinates(Map<String,dynamic> coordinates){
+    setState(() {
+      currLocation = coordinates;
+    });
+  }
+
   List<String> months = [
     'Jan',
     'Feb',
@@ -137,7 +143,7 @@ class _HomeNavState extends State<HomeNav> {
                             child: InkWell(
                               hoverColor: Colors.red[100],
                               onTap: (() => Get.to(() => UserMapsPage(
-                                  currLocation: currLocation,
+                                  setCoordinates: setCoordinates,
                                   setString: setLocation))),
                               borderRadius: BorderRadius.circular(5),
                               child: Container(

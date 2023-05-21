@@ -501,7 +501,7 @@ void _updateNameModal(BuildContext context) {
                                   SizedBox(
                                       width: 170,
                                       child: TextFormField(
-                                        controller: controller.firstName,
+                                        controller: controller.name,
                                         validator: (val) {
                                           if (val == null || val.isEmpty) {
                                             return 'Please enter new name';
