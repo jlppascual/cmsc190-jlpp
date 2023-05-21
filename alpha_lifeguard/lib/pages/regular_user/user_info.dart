@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:alpha_lifeguard/services/user_service.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -8,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../services/user_auth.dart';
+import 'main_home.dart';
 
 class UserInfoPage extends StatefulWidget {
   const UserInfoPage({super.key});
@@ -261,11 +263,14 @@ class _UserInfoPageState extends State<UserInfoPage> {
                               onPressed: () async {
                                 if (_formKey.currentState!.validate()) {
                                   await UserAuthService.instance.updateName();
+                                  await UserServices.instance
+                                      .updateProfilePicture(imageUrl);
 
                                   final SharedPreferences s =
                                       await SharedPreferences.getInstance();
 
                                   s.setBool("newUser", false);
+                                  Get.to(() => const UserMain());
                                 } else {
                                   Get.snackbar('ERROR: ',
                                       'Please fill up all fields properly');

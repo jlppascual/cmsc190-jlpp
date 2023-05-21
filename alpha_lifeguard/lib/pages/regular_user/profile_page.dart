@@ -28,7 +28,6 @@ class _UserProfileState extends State<UserProfile> {
   UploadTask? uploadTask;
 
   Future uploadReportImage() async {
-  
     var ridGenerator = const Uuid(); //creates unique ids
 
     var fileName = ridGenerator.v4();
@@ -228,31 +227,37 @@ class _UserProfileState extends State<UserProfile> {
                                                     decoration: BoxDecoration(
                                                       color: Colors.red,
                                                     ),
-                                                    child:  _imageFile == null
+                                                    child: _imageFile == null
                                                         ? Center(
                                                             child: Column(
-                                                              mainAxisAlignment: MainAxisAlignment.center,
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment.center,
                                                                 children: [
                                                                   const Text(
                                                                       'no image selected yet')
                                                                 ]),
                                                           )
-                                                        :Image.file(
-                                                      File(_imageFile!.path),
-                                                      width: double.infinity,
-                                                      fit: BoxFit.cover,
-                                                    )),
+                                                        : Image.file(
+                                                            File(_imageFile!
+                                                                .path),
+                                                            width:
+                                                                double.infinity,
+                                                            fit: BoxFit.cover,
+                                                          )),
                                                 buildProgress(),
                                                 Padding(
                                                   padding:
                                                       const EdgeInsets.only(
                                                           top: 20),
                                                   child: SizedBox(
-                                                      height: 30,
+                                                      height: 40,
                                                       width: 120,
                                                       child: ElevatedButton(
                                                         child: const Text(
-                                                            'select picture'),
+                                                          'select picture',
+                                                          textAlign:
+                                                              TextAlign.center,
+                                                        ),
                                                         onPressed: _getImage,
                                                       )),
                                                 ),
@@ -261,11 +266,14 @@ class _UserProfileState extends State<UserProfile> {
                                                       const EdgeInsets.only(
                                                           top: 20),
                                                   child: SizedBox(
-                                                      height: 30,
+                                                      height: 40,
                                                       width: 160,
                                                       child: ElevatedButton(
                                                         child: const Text(
-                                                            'change picture'),
+                                                          'change picture',
+                                                          textAlign:
+                                                              TextAlign.center,
+                                                        ),
                                                         onPressed: () async {
                                                           var res =
                                                               await UserServices
@@ -422,8 +430,8 @@ void _updateNameModal(BuildContext context) {
                             if (res == true) {
                               Get.snackbar(
                                   'SUCCESS:', 'Name changed successfully!');
-                                  controller.firstName.clear();
-                                  controller.lastName.clear();
+                              controller.firstName.clear();
+                              controller.lastName.clear();
 
                               Navigator.pop(context);
                             } else {
