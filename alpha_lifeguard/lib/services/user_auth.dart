@@ -131,7 +131,7 @@ class UserAuthService extends GetxController {
         codeSent: (String verificationId, resendToken) async {
           this.verificationId.value = verificationId;
         },
-        timeout: const Duration(seconds: 60),
+        timeout: const Duration(seconds: 120),
         codeAutoRetrievalTimeout: (String verificationId) {
           this.verificationId.value =
               verificationId; //if there is change or we resend the code after some time of interval

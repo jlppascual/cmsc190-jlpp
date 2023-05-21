@@ -198,7 +198,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
                                             errorStyle: const TextStyle(
                                                 color: Colors.white)),
                                         style: const TextStyle(
-                                            color: Colors.black),
+                                            color: Colors.white),
                                       )),
                                 ],
                               ),
@@ -238,7 +238,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
                                             errorStyle: const TextStyle(
                                                 color: Colors.white)),
                                         style: const TextStyle(
-                                            color: Colors.black),
+                                            color: Colors.white),
                                       ))
                                 ],
                               ),
@@ -260,16 +260,12 @@ class _UserInfoPageState extends State<UserInfoPage> {
                               ),
                               onPressed: () async {
                                 if (_formKey.currentState!.validate()) {
-                                  var res = await UserAuthService.instance
-                                      .updateName();
-                                  
-                                  if (res == true) {
-                                    final SharedPreferences s =
-                                        await SharedPreferences.getInstance();
-                                    s.setBool("newUser", false);
-                                  } else {
-                                    Get.snackbar('ERROR: ', '$res');
-                                  }
+                                  await UserAuthService.instance.updateName();
+
+                                  final SharedPreferences s =
+                                      await SharedPreferences.getInstance();
+
+                                  s.setBool("newUser", false);
                                 } else {
                                   Get.snackbar('ERROR: ',
                                       'Please fill up all fields properly');
