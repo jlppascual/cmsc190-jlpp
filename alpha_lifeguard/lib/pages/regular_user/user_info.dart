@@ -25,7 +25,8 @@ var iIcon = Icons.clear;
 var textLength = 0;
 
 class _UserInfoPageState extends State<UserInfoPage> {
-  String imageUrl ='https://firebasestorage.googleapis.com/v0/b/cmsc190-lifeguard.appspot.com/o/displaypics%2Fdefault_avatar.png?alt=media&token=85b76591-1c4c-477e-9faa-22c1246c42e3';
+  String imageUrl =
+      'https://firebasestorage.googleapis.com/v0/b/cmsc190-lifeguard.appspot.com/o/displaypics%2Fdefault_avatar.png?alt=media&token=85b76591-1c4c-477e-9faa-22c1246c42e3';
   String imagePath = '';
   XFile? _imageFile;
 
