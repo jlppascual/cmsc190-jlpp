@@ -3,10 +3,12 @@ import 'dart:io';
 import 'package:alpha_lifeguard/utils/map_constants.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:get/get.dart';
 import 'package:alpha_lifeguard/services/user_service.dart';
 import 'package:uuid/uuid.dart';
+import '../../services/maps_service.dart';
 import 'maps_page.dart';
 
 class HomeNav extends StatefulWidget {
@@ -39,7 +41,7 @@ class _HomeNavState extends State<HomeNav> {
     });
   }
 
-  setCoordinates(Map<String,dynamic> coordinates){
+  setCoordinates(Map<String, dynamic> coordinates) {
     setState(() {
       currLocation = coordinates;
     });
@@ -94,6 +96,26 @@ class _HomeNavState extends State<HomeNav> {
       });
     }
     uploadReportImage();
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    MapServices.instance.getUserCurrentLocation().then((value) async {
+      // specified current users location
+
+      Future.delayed(Duration.zero, () async {
+        List<Placemark> temp = await placemarkFromCoordinates(value.latitude, value.longitude);
+        setState(() {
+            currLocation=
+              {'latitude': value.latitude, 'longitude': value.longitude};
+
+          location = 
+              '${temp[0].street}, ${temp[0].thoroughfare}, ${temp[0].locality}, ${temp[0].subAdministrativeArea}, ${temp[0].administrativeArea}, ${temp[0].postalCode}';
+        });
+      });
+    });
   }
 
   @override
@@ -168,24 +190,7 @@ class _HomeNavState extends State<HomeNav> {
                                       ))
                                     ],
                                   )),
-                            )
-                            // TextField(
-                            //   onTap: () {
-                            //     Get.to(() =>
-                            //         UserMapsPage(currLocation: currLocation, setString: setLocation));
-                            //   },
-                            //   decoration: InputDecoration(
-                            //       prefixIcon: Icon(Icons.location_pin,
-                            //           color: Colors.red),
-                            //       filled: true,
-                            //       fillColor: Colors.white,
-                            //       labelText: location,
-                            //       border: OutlineInputBorder(
-                            //           borderRadius: BorderRadius.all(
-                            //               Radius.circular(10)))),
-                            // )
-
-                            )),
+                            ))),
                     const SizedBox(height: 10),
                     const Padding(
                         padding: EdgeInsets.symmetric(horizontal: 20),
@@ -224,7 +229,6 @@ class _HomeNavState extends State<HomeNav> {
                                       onPressed: () {
                                         setState(() {
                                           selectedType = 'medical';
-                                          debugPrint(selectedType);
                                         });
                                       },
                                       icon: Icon(Icons.add,
@@ -257,7 +261,6 @@ class _HomeNavState extends State<HomeNav> {
                                       onPressed: () {
                                         setState(() {
                                           selectedType = 'fire';
-                                          debugPrint(selectedType);
                                         });
                                       },
                                       icon: Icon(Icons.warning,
@@ -296,7 +299,6 @@ class _HomeNavState extends State<HomeNav> {
                                       onPressed: () {
                                         setState(() {
                                           selectedType = 'crime';
-                                          debugPrint(selectedType);
                                         });
                                       },
                                       icon: Icon(Icons.warehouse,
@@ -327,7 +329,6 @@ class _HomeNavState extends State<HomeNav> {
                                     onPressed: () {
                                       setState(() {
                                         selectedType = 'rescue';
-                                        debugPrint(selectedType);
                                       });
                                     },
                                     icon: Icon(Icons.airplanemode_active,
@@ -418,12 +419,10 @@ class _HomeNavState extends State<HomeNav> {
                                 if (selectedType == '') {
                                   Get.snackbar(
                                       'ERROR:', 'Select an incident type!');
+                                } else if (location == 'Current Location') {
+                                  Get.snackbar('ERROR:', 'Get location!');
                                 } else {
                                   DateTime today = DateTime.now();
-                                  String date =
-                                      '${months[today.month - 1]}. ${today.day}, ${today.year}';
-                                  String time =
-                                      '${(today.hour > 12 ? today.hour - 12 : today.hour)}:${(today.minute.bitLength < 2 ? "0${today.minute}" : today.minute)} ${(today.hour > 12 ? "PM" : "AM")}';
 
                                   try {
                                     Future.delayed(Duration.zero, () async {
@@ -434,8 +433,7 @@ class _HomeNavState extends State<HomeNav> {
                                         desc.text,
                                         imagePath,
                                         imageUrl,
-                                        date,
-                                        time,
+                                        today,
                                         location,
                                         currLocation);
                                     Get.snackbar('SUCCESS:', 'REPORT SENT!');

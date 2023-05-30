@@ -113,10 +113,8 @@ class _ResponseHomeState extends State<ResponseHome> {
                                       Get.to(() => ReportDetailsPage(
                                           desc: snapshot.data!.docs[index]
                                               .get('desc'),
-                                          time: snapshot.data!.docs[index]
-                                              .get('time'),
-                                          date: snapshot.data!.docs[index]
-                                              .get('date'),
+                                          dateTime: snapshot.data!.docs[index]
+                                              .get('dateTime'),
                                           finished: snapshot.data!.docs[index]
                                               .get('finished'),
                                           addressed: snapshot.data!.docs[index]
@@ -127,10 +125,10 @@ class _ResponseHomeState extends State<ResponseHome> {
                                               .get('uid'),
                                           downloadUrl: snapshot.data!.docs[index]
                                               .get('downloadUrl'),
-                                          userLoc:
-                                              snapshot.data!.docs[index].get('coordinates'),
-                                          addressedBy:snapshot.data!.docs[index].get('addressedBy'),
-                                          address:snapshot.data!.docs[index].get('address') ));
+                                          userLoc: snapshot.data!.docs[index]
+                                              .get('coordinates'),
+                                          addressedBy: snapshot.data!.docs[index].get('addressedBy'),
+                                          address: snapshot.data!.docs[index].get('address')));
                                     },
                                     child: Row(
                                       mainAxisAlignment:
@@ -140,11 +138,12 @@ class _ResponseHomeState extends State<ResponseHome> {
                                       mainAxisSize: MainAxisSize.max,
                                       children: [
                                         Text(
-                                            '${snapshot.data!.docs[index].get('date')}'),
+                                            '${months[snapshot.data!.docs[index].get('dateTime').toDate().month - 1]}. ${snapshot.data!.docs[index].get('dateTime').toDate().day}, ${snapshot.data!.docs[index].get('dateTime').toDate().year}'),
                                         Text(
                                             '${snapshot.data!.docs[index].get('type')}'),
                                         Text(
-                                            '${snapshot.data!.docs[index].get('time')}'),
+                                          '${snapshot.data!.docs[index].get('dateTime').toDate().hour > 12? snapshot.data!.docs[index].get('dateTime').toDate().hour - 12.bitLength < 2? '0${snapshot.data!.docs[index].get('dateTime').toDate().hour - 12}' : snapshot.data!.docs[index].get('dateTime').toDate().hour-12 : snapshot.data!.docs[index].get('dateTime').toDate().hour}:${snapshot.data!.docs[index].get('dateTime').toDate().minute.bitLength < 2? "0${snapshot.data!.docs[index].get('dateTime').toDate().minute}" : "${snapshot.data!.docs[index].get('dateTime').toDate().minute}"} ${snapshot.data!.docs[index].get('dateTime').toDate().hour > 12 ? "PM" : "AM"}'
+                                            ),
                                         TextButton(
                                             onPressed: () {
                                               setState(() {

@@ -17,10 +17,9 @@ class ReportDetailsPage extends StatefulWidget {
   ReportDetailsPage(
       {super.key,
       required this.desc,
-      required this.time,
+      required this.dateTime,
       required this.finished,
       required this.addressed,
-      required this.date,
       required this.rid,
       required this.uid,
       required this.downloadUrl,
@@ -29,8 +28,7 @@ class ReportDetailsPage extends StatefulWidget {
       required this.address});
 
   final dynamic desc;
-  final dynamic date;
-  final dynamic time;
+  final dynamic dateTime;
   final dynamic finished;
   final dynamic uid;
   dynamic addressed;
@@ -43,6 +41,21 @@ class ReportDetailsPage extends StatefulWidget {
   @override
   State<ReportDetailsPage> createState() => _ReportDetailsPageState();
 }
+
+List<String> months = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec'
+];
 
 class _ReportDetailsPageState extends State<ReportDetailsPage>
     with TickerProviderStateMixin {
@@ -157,8 +170,14 @@ class _ReportDetailsPageState extends State<ReportDetailsPage>
   }
 
   @override
+  void dispose() {
+    //...
+    super.dispose();
+    MapServices.instance.getUserCurrentLocation();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    debugPrint('${widget.downloadUrl}');
     return DefaultTabController(
         length: 2,
         child: Builder(builder: (BuildContext context) {
@@ -264,7 +283,8 @@ class _ReportDetailsPageState extends State<ReportDetailsPage>
                                 const Text('REPORT SENT ON: ',
                                     style:
                                         TextStyle(fontWeight: FontWeight.bold)),
-                                Text(widget.date)
+                                Text(
+                                    '${months[widget.dateTime.toDate().month - 1]}. ${widget.dateTime.toDate().day}, ${widget.dateTime.toDate().year}')
                               ],
                             )),
                       ),
@@ -279,7 +299,8 @@ class _ReportDetailsPageState extends State<ReportDetailsPage>
                                 const Text('REPORT SENT AT: ',
                                     style:
                                         TextStyle(fontWeight: FontWeight.bold)),
-                                Text(widget.time)
+                                Text(
+                                    '${widget.dateTime.toDate().hour > 12 ? widget.dateTime.toDate().hour - 12 : widget.dateTime.toDate().hour}:${widget.dateTime.toDate().minute.bitLength < 2 ? "0${widget.dateTime.toDate().minute}" : widget.dateTime.toDate().minute} ${widget.dateTime.toDate().hour > 12 ? "PM" : "AM"}'),
                               ],
                             )),
                       ),

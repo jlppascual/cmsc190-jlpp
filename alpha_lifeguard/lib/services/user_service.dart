@@ -34,8 +34,7 @@ class UserServices extends GetxController {
       String desc,
       String imagePath,
       String downloadUrl,
-      String date,
-      String time,
+      DateTime dateTime,
       String address,
       Map<String, dynamic> coordinates) async {
     var ridGenerator = const Uuid(); //creates unique ids
@@ -55,8 +54,7 @@ class UserServices extends GetxController {
         type: type,
         storagePath: imagePath,
         downloadUrl: downloadUrl,
-        date: date,
-        time: time,
+        dateTime: dateTime,
         coordinates: coordinates,
         address: address,
         finished: false,
@@ -84,6 +82,7 @@ class UserServices extends GetxController {
     return _firebaseFirestore
         .collection("user_reports")
         .where('uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .orderBy("dateTime",descending: true)
         .snapshots();
   }
 

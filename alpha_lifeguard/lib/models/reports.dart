@@ -2,8 +2,7 @@ class Report {
   final String uid;
   final String rid;
   final String type;
-  final String date;
-  final String time;
+  final DateTime dateTime;
   final String storagePath;
   final String downloadUrl;
   final Map<String, dynamic> coordinates;
@@ -22,8 +21,7 @@ class Report {
       this.desc = '',
       required this.storagePath,
       required this.downloadUrl,
-      required this.date,
-      required this.time,
+      required this.dateTime,
       required this.coordinates,
       this.addressedBy = '',
       required this.address
@@ -38,8 +36,7 @@ class Report {
         desc = data['desc'],
         storagePath = data['storagePath'],
         downloadUrl = data['downloadUrl'],
-        date = data['date'],
-        time = data['time'],
+        dateTime = data['dateTime'],
         coordinates = data['coordinates'],
         addressedBy = data['addressedBy'],
         address = data['address'];
@@ -52,8 +49,7 @@ class Report {
       'desc': desc,
       'storagePath': storagePath,
       'downloadUrl': downloadUrl,
-      'date': date,
-      'time': time,
+      'dateTime': dateTime,
       'coordinates': coordinates,
       'addressed': addressed,
       'finished': finished,

@@ -71,6 +71,7 @@ class ResponderService extends GetxController {
     yield* _firebaseFirestore
         .collection("user_reports")
         .where('type', isEqualTo: res)
+        .orderBy("dateTime", descending: true)
         .snapshots();
   }
 
@@ -88,6 +89,7 @@ class ResponderService extends GetxController {
         .where('type', isEqualTo: res)
         .where('addressed', isEqualTo: true)
         .where('addressedBy', isEqualTo: _auth.currentUser!.uid)
+        .orderBy("dateTime", descending: true)
         .snapshots();
   }
 
@@ -115,6 +117,7 @@ class ResponderService extends GetxController {
         .collection("user_reports")
         .where('type', isEqualTo: res)
         .where('finished', isEqualTo: true)
+        .orderBy("dateTime", descending: true)
         .snapshots();
   }
 

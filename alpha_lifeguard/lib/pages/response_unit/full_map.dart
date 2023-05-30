@@ -17,147 +17,186 @@ class ResponseFullMap extends StatefulWidget {
   State<ResponseFullMap> createState() => _ResponseFullMapState();
 }
 
+final LocationSettings locationSettings =
+    const LocationSettings(accuracy: LocationAccuracy.high, distanceFilter: 0);
+GoogleMapController? _controller;
+
 class _ResponseFullMapState extends State<ResponseFullMap> {
-  final Completer<GoogleMapController> _controller = Completer();
   final List<Marker> markers = <Marker>[];
-  late CameraPosition _googleCamPos;
+  CameraPosition? _googleCamPos;
+  var zoomValue = MapConstants.defaultCameraZoom;
+  StreamSubscription<Position>? posStream;
 
   List<LatLng> polyLineCoordinates = [];
 
-  Position? currentLocation;
-
-  final LocationSettings locationSettings = const LocationSettings(
-      accuracy: LocationAccuracy.high, distanceFilter: 100);
+  LatLng? currentLocation;
+  Timer? timer;
 
   //get points that forms the route from origin to dest
   void getPolyPoints() async {
+    polyLineCoordinates = [];
+
     PolylinePoints polyLinePoints = PolylinePoints();
     PolylineResult result = await polyLinePoints.getRouteBetweenCoordinates(
         googleAPIKey,
         PointLatLng(widget.userLoc['latitude'], widget.userLoc['longitude']),
-        PointLatLng(
-            markers[1].position.latitude, markers[1].position.longitude));
+        PointLatLng(currentLocation!.latitude, currentLocation!.longitude));
 
-    if (result.points.isNotEmpty) {
-      result.points.forEach((PointLatLng point) =>
-          polyLineCoordinates.add(LatLng(point.latitude, point.longitude)));
-    }
     setState(() {
-      //
+      if (result.points.isNotEmpty) {
+        result.points.forEach((PointLatLng point) =>
+            polyLineCoordinates.add(LatLng(point.latitude, point.longitude)));
+      }
     });
   }
 
 //function that listens for the response unit  location change
   void getCurrentLocation() async {
-    await MapServices.instance.getUserCurrentLocation().then((value) {
+    MapServices.instance.getUserCurrentLocation().then((value) {
       setState(() {
-        currentLocation = value;
-      });
-      return;
-    });
-  }
+        currentLocation = LatLng(value.latitude, value.longitude);
+        getPolyPoints();
+        _googleCamPos = CameraPosition(
+          target: LatLng(value.latitude, value.longitude),
+          zoom: zoomValue,
+        );
 
-  @override
-  void initState() {
-    super.initState();
-
-    getCurrentLocation();
-
-    _googleCamPos = CameraPosition(
-        target: LatLng(widget.userLoc['latitude'], widget.userLoc['longitude']),
-        zoom: MapConstants.defaultCameraZoom,
-        tilt: 0,
-        bearing: 0);
-
-    markers.add(Marker(
-        markerId: const MarkerId('1'),
-        position:
-            LatLng(widget.userLoc['latitude'], widget.userLoc['longitude']),
-        infoWindow: const InfoWindow(title: 'Victim Current Location')));
-
-    Future.delayed(Duration.zero, () async {
-      await MapServices.instance.getUserCurrentLocation().then((value) async {
-        setState(() {
-          markers.add(Marker(
-              markerId: const MarkerId('2'),
-              position: LatLng(value.latitude, value.longitude),
-              infoWindow: const InfoWindow(title: 'My Current Location'),
-              icon: BitmapDescriptor.defaultMarkerWithHue(
-                  BitmapDescriptor.hueBlue)));
-        });
-      });
-      getPolyPoints();
-    });
-
-    //listens to the change in position
-    Geolocator.getPositionStream(locationSettings: locationSettings)
-        .listen((Position? position) async {
-      GoogleMapController googleMapController = await _controller.future;
-
-      setState(() {
         markers.add(Marker(
-            markerId: const MarkerId('2'),
-            position: LatLng(position!.latitude, position.longitude),
+            markerId: const MarkerId('destination'),
+            position:
+                LatLng(currentLocation!.latitude, currentLocation!.longitude),
             infoWindow: const InfoWindow(title: 'My Current Location'),
             icon: BitmapDescriptor.defaultMarkerWithHue(
                 BitmapDescriptor.hueBlue)));
-        googleMapController.animateCamera(CameraUpdate.newCameraPosition(
+      });
+    });
+
+    posStream = Geolocator.getPositionStream(locationSettings: locationSettings)
+        .listen((Position? position) async {
+ 
+      setState(() {
+        currentLocation = LatLng(position!.latitude, position.longitude);
+        getPolyPoints();
+
+        markers.add(Marker(
+            markerId: const MarkerId('destination'),
+            position: LatLng(position.latitude, position.longitude),
+            infoWindow: const InfoWindow(title: 'My Current Location'),
+            icon: BitmapDescriptor.defaultMarkerWithHue(
+                BitmapDescriptor.hueBlue)));
+
+        // camera position
+        _controller?.animateCamera(CameraUpdate.newCameraPosition(
             CameraPosition(
+                zoom: zoomValue,
                 target: LatLng(position.latitude, position.longitude))));
       });
     });
   }
 
   @override
+  void dispose() {
+    posStream?.cancel();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    markers.add(
+      Marker(
+          markerId: const MarkerId('source'),
+          position:
+              LatLng(widget.userLoc['latitude'], widget.userLoc['longitude']),
+          infoWindow: const InfoWindow(title: 'Victim Current Location')),
+    );
+
+    getCurrentLocation();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.red,
-        appBar: AppBar(
-          backgroundColor: Colors.yellow[100],
-          foregroundColor: Colors.red,
+      backgroundColor: Colors.red,
+      appBar: AppBar(
+        backgroundColor: Colors.yellow[100],
+        foregroundColor: Colors.red,
+      ),
+      body: _googleCamPos == null
+          ? const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 60,
+                    height: 60,
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 15),
+                    child: Text(
+                      'Loading Map...',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+            )
+          : GoogleMap(
+              initialCameraPosition: _googleCamPos!,
+              polylines: {
+                Polyline(
+                    polylineId: const PolylineId('route'),
+                    points: polyLineCoordinates,
+                    color: Colors.red,
+                    width: 6)
+              },
+              markers: Set<Marker>.of(markers),
+              mapType: MapType.normal,
+              myLocationEnabled: true,
+              compassEnabled: true,
+              onCameraMove: (CameraPosition cameraPos) async {
+                setState(() {
+                  zoomValue = cameraPos.zoom;
+                });
+              },
+              onMapCreated: (GoogleMapController controller) {
+                // if (!_controller.isCompleted) {
+                  _controller=controller;
+                // } else {
+                //   //
+                // }
+              },
+            ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          MapServices.instance.getUserCurrentLocation().then((value) async {
+            // specified current users location
+            CameraPosition newCameraPosition = CameraPosition(
+                target: LatLng(value.latitude, value.longitude),
+                zoom: zoomValue,
+                bearing: 0,
+                tilt: 0);
+            _controller?.animateCamera(
+                CameraUpdate.newCameraPosition(newCameraPosition));
+            setState(() {
+              _googleCamPos = newCameraPosition;
+
+              // marker added for current users location
+              currentLocation = LatLng(value.latitude, value.longitude);
+              getPolyPoints();
+            });
+          });
+        },
+        child: const Icon(
+          Icons.pin_drop_rounded,
+          color: Colors.white,
         ),
-        body: currentLocation == null
-            ? const Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: 60,
-                      height: 60,
-                      child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 15),
-                      child: Text(
-                        'Loading Map...',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            : GoogleMap(
-                initialCameraPosition: _googleCamPos,
-                polylines: {
-                  Polyline(
-                      polylineId: const PolylineId('route'),
-                      points: polyLineCoordinates,
-                      color: Colors.red,
-                      width: 6)
-                },
-                markers: Set<Marker>.of(markers),
-                mapType: MapType.normal,
-                myLocationEnabled: true,
-                compassEnabled: true,
-                onMapCreated: (GoogleMapController controller) {
-                  if (!_controller.isCompleted) {
-                    _controller.complete(controller);
-                  } else {
-                    // do nothing
-                  }
-                },
-              ));
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    );
   }
 }

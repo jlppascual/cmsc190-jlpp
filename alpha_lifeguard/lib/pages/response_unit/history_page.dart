@@ -10,6 +10,21 @@ class ResponseUnitHistory extends StatefulWidget {
   State<ResponseUnitHistory> createState() => _ResponseUnitHistoryState();
 }
 
+List<String> months = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec'
+];
+
 class _ResponseUnitHistoryState extends State<ResponseUnitHistory> {
   @override
   Widget build(BuildContext context) {
@@ -104,16 +119,15 @@ class _ResponseUnitHistoryState extends State<ResponseUnitHistory> {
                                         Get.to(() => ReportDetailsPage(
                                               desc: snapshot.data!.docs[index]
                                                   .get('desc'),
-                                              time: snapshot.data!.docs[index]
-                                                  .get('time'),
                                               finished: snapshot
                                                   .data!.docs[index]
                                                   .get('finished'),
                                               addressed: snapshot
                                                   .data!.docs[index]
                                                   .get('addressed'),
-                                              date: snapshot.data!.docs[index]
-                                                  .get('date'),
+                                              dateTime: snapshot
+                                                  .data!.docs[index]
+                                                  .get('dateTime'),
                                               rid: snapshot.data!.docs[index]
                                                   .get('rid'),
                                               uid: snapshot.data!.docs[index]
@@ -145,12 +159,12 @@ class _ResponseUnitHistoryState extends State<ResponseUnitHistory> {
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.center,
                                               children: [
-                                                Text(snapshot.data!.docs[index]
-                                                    .get('date')),
+                                                Text(
+                                                    '${months[snapshot.data!.docs[index].get('dateTime').toDate().month - 1]}. ${snapshot.data!.docs[index].get('dateTime').toDate().day}, ${snapshot.data!.docs[index].get('dateTime').toDate().year}'),
                                                 Text(snapshot.data!.docs[index]
                                                     .get('type')),
-                                                Text(snapshot.data!.docs[index]
-                                                    .get('time')),
+                                                Text(
+                                                    '${snapshot.data!.docs[index].get('dateTime').toDate().hour > 12 ? "${snapshot.data!.docs[index].get('dateTime').toDate().hour - 12}" : snapshot.data!.docs[index].get('dateTime').toDate().hour}:${snapshot.data!.docs[index].get('dateTime').toDate().minute.bitLength < 2 ? "0${snapshot.data!.docs[index].get('dateTime').toDate().minute}" : snapshot.data!.docs[index].get('dateTime').toDate().minute} ${snapshot.data!.docs[index].get('dateTime').toDate().hour > 12 ? "PM" : "AM"}'),
                                                 TextButton(
                                                     onPressed: () {
                                                       debugPrint(snapshot.data!

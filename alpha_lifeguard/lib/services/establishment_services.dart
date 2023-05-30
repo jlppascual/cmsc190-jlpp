@@ -30,6 +30,7 @@ class EstablishmentServices extends GetxController {
     return _firebaseFirestore
         .collection("response_units")
         .where('rsid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .orderBy('lastName')
         .snapshots();
   }
 

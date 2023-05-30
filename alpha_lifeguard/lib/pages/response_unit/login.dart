@@ -129,8 +129,8 @@ class _ResponseLoginState extends State<ResponseLogin> {
                                                     icon: isObscured == true
                                                         ? Icon(Icons
                                                             .visibility_off)
-                                                        : Icon(Icons
-                                                            .visibility),
+                                                        : Icon(
+                                                            Icons.visibility),
                                                     onPressed: () {
                                                       setState(() {
                                                         isObscured =
@@ -201,21 +201,6 @@ class _ResponseLoginState extends State<ResponseLogin> {
                                                 child: const Text('LOGIN',
                                                     style: TextStyle(
                                                         fontSize: 15))))),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        TextButton(
-                                          onPressed: () {
-                                            debugPrint(
-                                                "Forgot password clicked!");
-                                          },
-                                          child: const Text('Forgot Password?',
-                                              style: TextStyle(
-                                                  color: Colors.white)),
-                                        ),
-                                      ],
-                                    ),
                                   ])))
                     ],
                   )),

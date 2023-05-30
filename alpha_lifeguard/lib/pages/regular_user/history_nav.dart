@@ -11,6 +11,21 @@ class HistoryNav extends StatefulWidget {
   State<HistoryNav> createState() => _HistoryNavState();
 }
 
+List<String> months = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec'
+];
+
 class _HistoryNavState extends State<HistoryNav> {
   @override
   Widget build(BuildContext context) {
@@ -102,32 +117,23 @@ class _HistoryNavState extends State<HistoryNav> {
                                   return InkWell(
                                       onTap: () {
                                         Get.to(() => UserReportDetailsPage(
-                                              desc: snapshot.data!.docs[index]
-                                                  .get('desc'),
-                                              time: snapshot.data!.docs[index]
-                                                  .get('time'),
-                                              finished: snapshot
-                                                  .data!.docs[index]
-                                                  .get('finished'),
-                                              addressed: snapshot
-                                                  .data!.docs[index]
-                                                  .get('addressed'),
-                                              date: snapshot.data!.docs[index]
-                                                  .get('date'),
-                                              rid: snapshot.data!.docs[index]
-                                                  .get('rid'),
-                                              uid: snapshot.data!.docs[index]
-                                                  .get('uid'),
-                                              userLoc: snapshot
-                                                  .data!.docs[index]
-                                                  .get('coordinates'),
-                                              downloadUrl: snapshot
-                                                  .data!.docs[index]
-                                                  .get('downloadUrl'),
-                                              address: snapshot
-                                                  .data!.docs[index]
-                                                  .get('address')
-                                            ));
+                                            desc: snapshot.data!.docs[index]
+                                                .get('desc'),
+                                            finished: snapshot.data!.docs[index]
+                                                .get('finished'),
+                                            addressed: snapshot.data!.docs[index]
+                                                .get('addressed'),
+                                            dateTime: snapshot.data!.docs[index]
+                                                .get('dateTime'),
+                                            rid: snapshot.data!.docs[index]
+                                                .get('rid'),
+                                            uid: snapshot.data!.docs[index]
+                                                .get('uid'),
+                                            userLoc: snapshot.data!.docs[index]
+                                                .get('coordinates'),
+                                            downloadUrl:
+                                                snapshot.data!.docs[index].get('downloadUrl'),
+                                            address: snapshot.data!.docs[index].get('address')));
                                       },
                                       child: Column(
                                         mainAxisAlignment:
@@ -142,12 +148,12 @@ class _HistoryNavState extends State<HistoryNav> {
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.center,
                                               children: [
-                                                Text(snapshot.data!.docs[index]
-                                                    .get('date')),
+                                                Text(
+                                                    '${months[snapshot.data!.docs[index].get('dateTime').toDate().month - 1]}. ${snapshot.data!.docs[index].get('dateTime').toDate().day}, ${snapshot.data!.docs[index].get('dateTime').toDate().year}'),
                                                 Text(snapshot.data!.docs[index]
                                                     .get('type')),
-                                                Text(snapshot.data!.docs[index]
-                                                    .get('time')),
+                                                Text(
+                                                    '${snapshot.data!.docs[index].get('dateTime').toDate().hour > 12 ? snapshot.data!.docs[index].get('dateTime').toDate().hour - 12.bitLength < 2 ? "0${snapshot.data!.docs[index].get('dateTime').toDate().hour - 12}" : snapshot.data!.docs[index].get('dateTime').toDate().hour - 12 : snapshot.data!.docs[index].get('dateTime').toDate().hour}:${snapshot.data!.docs[index].get('dateTime').toDate().minute.bitLength < 2 ? "0${snapshot.data!.docs[index].get('dateTime').toDate().minute}" : snapshot.data!.docs[index].get('dateTime').toDate().minute} ${snapshot.data!.docs[index].get('dateTime').toDate().hour > 12 ? "PM" : "AM"}'),
                                                 TextButton(
                                                     onPressed: () {
                                                       debugPrint(snapshot.data!

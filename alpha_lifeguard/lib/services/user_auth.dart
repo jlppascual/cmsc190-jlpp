@@ -68,8 +68,7 @@ class UserAuthService extends GetxController {
     final SharedPreferences s = await SharedPreferences.getInstance();
 
     if (user != null) {
-      await Future.delayed(const Duration(seconds: 5), () async {
-      });
+      await Future.delayed(const Duration(seconds: 5), () async {});
     }
 
     user == null
@@ -145,9 +144,10 @@ class UserAuthService extends GetxController {
       User? user = (await _auth.signInWithCredential(credential)).user;
       if (user != null) {
         _uid = user.uid;
-
+        var res = await checkExistingUser();
         //add user in firestore database if user does not exist yet
-        if (await checkExistingUser() == false) {
+        if (res == false) {
+          debugPrint(res.toString());
           var regUser =
               RegularUser(uid: uid, phoneNumber: phoneNumber, role: role);
           await UserServices.instance.createUser(regUser);

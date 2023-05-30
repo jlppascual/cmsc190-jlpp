@@ -11,10 +11,9 @@ class UserReportDetailsPage extends StatefulWidget {
   UserReportDetailsPage(
       {super.key,
       required this.desc,
-      required this.time,
       required this.finished,
       required this.addressed,
-      required this.date,
+      required this.dateTime,
       required this.rid,
       required this.uid,
       required this.userLoc,
@@ -22,8 +21,7 @@ class UserReportDetailsPage extends StatefulWidget {
       required this.address});
 
   final dynamic desc;
-  final dynamic date;
-  final dynamic time;
+  final dynamic dateTime;
   final dynamic finished;
   dynamic addressed;
   final dynamic rid;
@@ -35,6 +33,21 @@ class UserReportDetailsPage extends StatefulWidget {
   @override
   State<UserReportDetailsPage> createState() => _UserReportDetailsPageState();
 }
+
+List<String> months = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec'
+];
 
 class _UserReportDetailsPageState extends State<UserReportDetailsPage>
     with TickerProviderStateMixin {
@@ -158,7 +171,8 @@ class _UserReportDetailsPageState extends State<UserReportDetailsPage>
                                 const Text('REPORT SENT ON: ',
                                     style:
                                         TextStyle(fontWeight: FontWeight.bold)),
-                                Text(widget.date)
+                                Text(
+                                    '${months[widget.dateTime.toDate().month - 1]}. ${widget.dateTime.toDate().day}, ${widget.dateTime.toDate().year}')
                               ],
                             )),
                       ),
@@ -173,7 +187,8 @@ class _UserReportDetailsPageState extends State<UserReportDetailsPage>
                                 const Text('REPORT SENT AT: ',
                                     style:
                                         TextStyle(fontWeight: FontWeight.bold)),
-                                Text(widget.time)
+                                Text(
+                                    '${widget.dateTime.toDate().hour > 12 ? widget.dateTime.toDate().hour - 12 : widget.dateTime.toDate().hour}:${widget.dateTime.toDate().minute.bitLength < 2 ? "0${widget.dateTime.toDate().minute}" : widget.dateTime.toDate().minute} ${widget.dateTime.toDate().hour > 12 ? "PM" : "AM"}'),
                               ],
                             )),
                       ),

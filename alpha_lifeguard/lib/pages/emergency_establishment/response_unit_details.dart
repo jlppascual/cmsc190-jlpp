@@ -5,11 +5,13 @@ class ResponseUnitDetails extends StatefulWidget {
       {super.key,
       required this.firstName,
       required this.lastName,
-      required this.email});
+      required this.email,
+      required this.image});
 
   final String firstName;
   final String lastName;
   final String email;
+  final String image;
 
   @override
   State<ResponseUnitDetails> createState() => _ResponseUnitDetailsState();
@@ -31,6 +33,24 @@ class _ResponseUnitDetailsState extends State<ResponseUnitDetails> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    image: DecorationImage(
+                        image: NetworkImage(widget.image),
+                        fit: BoxFit.contain))),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  '${widget.email}',
+                  style: TextStyle(
+                      color: Colors.red[700], fontWeight: FontWeight.w400),
+                )
+              ],
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -39,6 +59,11 @@ class _ResponseUnitDetailsState extends State<ResponseUnitDetails> {
                   style: TextStyle(
                       color: Colors.red[700], fontWeight: FontWeight.w800),
                 ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
                 Text(
                   '${widget.email}',
                   style: TextStyle(

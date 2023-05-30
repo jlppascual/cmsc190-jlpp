@@ -96,7 +96,6 @@ class _UserMapsPageState extends State<UserMapsPage> {
           _controller.complete(controller);
         },
         onTap: (LatLng coordinates) async {
-          debugPrint('${coordinates.latitude} ${coordinates.longitude}');
           CameraPosition newCameraPosition = CameraPosition(
               target: LatLng(coordinates.latitude, coordinates.longitude),
               zoom: 14,
@@ -121,7 +120,7 @@ class _UserMapsPageState extends State<UserMapsPage> {
             // specified current users location
             CameraPosition newCameraPosition = CameraPosition(
                 target: LatLng(value.latitude, value.longitude),
-                zoom: 14,
+                zoom: MapConstants.defaultCameraZoom,
                 bearing: 0,
                 tilt: 0);
             final GoogleMapController controller = await _controller.future;
