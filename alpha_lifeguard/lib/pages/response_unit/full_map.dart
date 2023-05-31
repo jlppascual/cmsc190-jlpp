@@ -164,11 +164,7 @@ class _ResponseFullMapState extends State<ResponseFullMap> {
                 });
               },
               onMapCreated: (GoogleMapController controller) {
-                // if (!_controller.isCompleted) {
                   _controller=controller;
-                // } else {
-                //   //
-                // }
               },
             ),
       floatingActionButton: FloatingActionButton(

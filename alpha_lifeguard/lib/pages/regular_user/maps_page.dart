@@ -20,6 +20,7 @@ class UserMapsPage extends StatefulWidget {
 
 class _UserMapsPageState extends State<UserMapsPage> {
   final Completer<GoogleMapController> _controller = Completer();
+  var zoomValue = MapConstants.defaultCameraZoom;
 
   static CameraPosition _googleCamPos = const CameraPosition(
       target: LatLng(14.3875, 121.0463),
@@ -45,7 +46,7 @@ class _UserMapsPageState extends State<UserMapsPage> {
         // specified current users location
         CameraPosition newCameraPosition = CameraPosition(
             target: LatLng(value.latitude, value.longitude),
-            zoom: 14,
+            zoom: zoomValue,
             bearing: 0,
             tilt: 0);
         final GoogleMapController controller = await _controller.future;
@@ -95,22 +96,37 @@ class _UserMapsPageState extends State<UserMapsPage> {
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
         },
+        onCameraMove: (CameraPosition cameraPos) async {
+          setState(() {
+            zoomValue = cameraPos.zoom;
+          });
+        },
         onTap: (LatLng coordinates) async {
+          List<Placemark> temp = await placemarkFromCoordinates(
+              coordinates.latitude, coordinates.longitude);
           CameraPosition newCameraPosition = CameraPosition(
               target: LatLng(coordinates.latitude, coordinates.longitude),
-              zoom: 14,
+              zoom: zoomValue,
               bearing: 0,
               tilt: 0);
           final GoogleMapController controller = await _controller.future;
           controller
               .animateCamera(CameraUpdate.newCameraPosition(newCameraPosition));
           setState(() {
+            placemarks = temp;
+
+            widget.setCoordinates({
+              'latitude': coordinates.latitude,
+              'longitude': coordinates.longitude
+            });
             markers.add(Marker(
                 markerId: const MarkerId('1'),
                 position: LatLng(coordinates.latitude, coordinates.longitude),
                 infoWindow: const InfoWindow(
                   title: 'My Current Location',
                 )));
+            widget.setString(
+                '${placemarks?[0].street}, ${placemarks?[0].thoroughfare}, ${placemarks?[0].locality}, ${placemarks?[0].subAdministrativeArea}, ${placemarks?[0].administrativeArea}, ${placemarks?[0].postalCode}');
           });
         },
       ),
@@ -118,15 +134,19 @@ class _UserMapsPageState extends State<UserMapsPage> {
         onPressed: () async {
           MapServices.instance.getUserCurrentLocation().then((value) async {
             // specified current users location
+            List<Placemark> temp =
+                await placemarkFromCoordinates(value.latitude, value.longitude);
             CameraPosition newCameraPosition = CameraPosition(
                 target: LatLng(value.latitude, value.longitude),
-                zoom: MapConstants.defaultCameraZoom,
+                zoom: zoomValue,
                 bearing: 0,
                 tilt: 0);
             final GoogleMapController controller = await _controller.future;
             controller.animateCamera(
                 CameraUpdate.newCameraPosition(newCameraPosition));
             setState(() {
+              placemarks = temp;
+
               _googleCamPos = newCameraPosition;
               widget.setCoordinates(
                   {'latitude': value.latitude, 'longitude': value.longitude});
@@ -139,6 +159,8 @@ class _UserMapsPageState extends State<UserMapsPage> {
                   title: 'My Current Location',
                 ),
               ));
+              widget.setString(
+                  '${placemarks?[0].street}, ${placemarks?[0].thoroughfare}, ${placemarks?[0].locality}, ${placemarks?[0].subAdministrativeArea}, ${placemarks?[0].administrativeArea}, ${placemarks?[0].postalCode}');
             });
           });
         },

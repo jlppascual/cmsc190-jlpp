@@ -147,7 +147,6 @@ class UserAuthService extends GetxController {
         var res = await checkExistingUser();
         //add user in firestore database if user does not exist yet
         if (res == false) {
-          debugPrint(res.toString());
           var regUser =
               RegularUser(uid: uid, phoneNumber: phoneNumber, role: role);
           await UserServices.instance.createUser(regUser);
