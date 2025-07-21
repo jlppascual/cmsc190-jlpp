@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>366120527293-ph4866cnlpfbpu2g1aa8vppj1vulbpmb.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.366120527293-ph4866cnlpfbpu2g1aa8vppj1vulbpmb</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBpP3u5e6Z4dGMZhF1pGi640_gMRWdzP2s</string>
+	<key>GCM_SENDER_ID</key>
+	<string>366120527293</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.alphaLifeguard</string>
+	<key>PROJECT_ID</key>
+	<string>cmsc190-jlpp</string>
+	<key>STORAGE_BUCKET</key>
+	<string>cmsc190-jlpp.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:366120527293:ios:453facbcb5a27de47eded4</string>
+</dict>
+</plist>
